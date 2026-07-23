@@ -36,8 +36,18 @@ def parse_ical_datetime(dt_str):
 
 def fetch_lms_events(ical_url):
     """ดาวน์โหลดและอ่านรายการการบ้านจาก iCal URL"""
+    # ป้องกันกรณีค่า secret ถูก copy มาแบบมีวงเล็บ/เครื่องหมายคำพูด/ช่องว่างติดมาด้วย
+    # เช่น "[https://...]" ซึ่งจะทำให้ urllib มองว่าเป็น URL scheme ที่ไม่รู้จัก
+    cleaned_url = ical_url.strip().strip('[]<>"\'').strip()
+    if not cleaned_url.startswith(('http://', 'https://')):
+        raise ValueError(
+            f"LMS_ICAL_URL ดูไม่ถูกต้อง: {cleaned_url!r} "
+            "กรุณาตรวจสอบค่าใน GitHub Secrets ว่าเป็น URL ล้วนๆ "
+            "ไม่มีวงเล็บ [ ], เครื่องหมายคำพูด, หรือช่องว่างครอบอยู่"
+        )
+
     req = urllib.request.Request(
-        ical_url, 
+        cleaned_url,
         headers={'User-Agent': 'Mozilla/5.0'}
     )
     with urllib.request.urlopen(req) as response:
