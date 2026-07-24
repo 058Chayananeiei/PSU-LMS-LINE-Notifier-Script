@@ -8,14 +8,21 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Send LINE Notification
+      - name: Send LINE Notification via Messaging API
         env:
-          LINE_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+          CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          USER_ID: ${{ secrets.LINE_USER_ID }}
           TASK_NAME: ${{ github.event.client_payload.task_title }}
         run: |
-          curl -X POST "https://notify-api.line.me/api/notify" \
-            -H "Authorization: Bearer $LINE_TOKEN" \
-            --data-urlencode "message=
-          ✅ อัปเดตสถานะงาน!
-          ทำเสร็จเรียบร้อยแล้ว: $TASK_NAME
-          🎉 เก่งมากครับ! งานค้างลดลงอีก 1 งานแล้ว"
+          curl -X POST "https://api.line.me/v2/bot/message/push" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $CHANNEL_ACCESS_TOKEN" \
+            -d "{
+              \"to\": \"$USER_ID\",
+              \"messages\": [
+                {
+                  \"type\": \"text\",
+                  \"text\": \"✅ อัปเดตสถานะงาน!\nทำเสร็จเรียบร้อยแล้ว: $TASK_NAME\n🎉 เก่งมากครับ! งานค้างลดลงอีก 1 งานแล้ว\"
+                }
+              ]
+            }"
