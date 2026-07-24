@@ -4,30 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PSU LMS Assignment Calendar & LINE Notifier</title>
-    <!-- Tailwind CSS (Compiled Standalone - ไม่ขึ้น Warning ใน Console) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Font: Kanit & Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        psu: {
+                            blue: '#003366',
+                            lightBlue: '#0055a5',
+                            accent: '#00a8cc',
+                            gold: '#ffb703'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body {
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             font-family: 'Kanit', sans-serif;
         }
-        .bg-psu-gradient {
-            background: linear-gradient(135deg, #002244 0%, #003366 50%, #004b87 100%);
-        }
         .line-bubble-shadow {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #f1f1f1;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb {
@@ -39,45 +55,32 @@
         }
         .calendar-day-cell {
             min-height: 85px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
         }
         .calendar-day-cell:hover {
-            background-color: #f8fafc;
-            transform: translateY(-1px);
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background-color: #f1f5f9;
         }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Header Navigation Bar -->
-    <nav class="bg-psu-gradient text-white shadow-md sticky top-0 z-50">
+    <nav class="bg-psu-blue text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Brand & PSU Logo -->
-                <div class="flex items-center space-x-4">
-                    <div class="bg-white p-2 rounded-2xl shadow-sm flex items-center justify-center">
-                        <img src="https://i.imgur.com/8Q9Z1Qp.png" alt="PSU Logo" class="h-9 w-auto object-contain" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/PSU_Logo.png/600px-PSU_Logo.png';">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20">
+                        <i class="fa-solid fa-calendar-days text-2xl text-psu-gold"></i>
                     </div>
-                    <div class="border-l border-white/20 pl-4">
-                        <h1 class="font-bold text-lg sm:text-xl tracking-wide leading-tight">PSU LMS Calendar</h1>
-                        <p class="text-xs text-blue-200 font-light flex items-center gap-1.5 mt-0.5">
-                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            ระบบติดตามงาน & แจ้งเตือน LINE อัตโนมัติ
-                        </p>
+                    <div>
+                        <h1 class="font-bold text-lg sm:text-xl tracking-wide leading-tight">PSU LMS Calendar & Notifier</h1>
+                        <p class="text-xs text-blue-200 font-light">ตารางปฏิทินการบ้าน & ระบบแจ้งเตือน LINE อัตโนมัติ</p>
                     </div>
                 </div>
-
-                <!-- Header Actions -->
                 <div class="flex items-center space-x-3">
-                    <button onclick="resetGithubPat()" title="ตั้งค่า GitHub Token ใหม่" class="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/10 hover:bg-white/20 text-white transition border border-white/15 flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-key text-amber-300"></i>
-                        <span class="hidden sm:inline">ตั้งค่า Token</span>
+                    <button onclick="resetGithubPat()" title="ตั้งค่า GitHub Token ใหม่" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-white/10 hover:bg-white/20 text-blue-100 transition border border-white/20 flex items-center gap-1">
+                        <i class="fa-solid fa-key text-psu-gold"></i> ตั้งค่า Token
                     </button>
-                    <span id="sync-status-badge" class="px-3.5 py-1.5 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-2">
+                    <span id="sync-status-badge" class="px-3 py-1 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         ซิงก์ข้อมูล LINE 100%
                     </span>
@@ -86,99 +89,94 @@
         </div>
     </nav>
 
-    <!-- Main Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         <!-- Status Banner -->
-        <div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3.5">
-                <div class="p-3 rounded-2xl bg-blue-50 text-blue-800">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-xl bg-blue-50 text-psu-blue">
                     <i class="fa-solid fa-cloud-arrow-down text-lg"></i>
                 </div>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">ข้อมูลภาระงานเชื่อมต่อตรงกับ PSU LMS</h2>
-                    <p id="last-updated-text" class="text-xs text-slate-500 mt-0.5">อัปเดตล่าสุด: กำลังโหลดข้อมูล...</p>
+                    <h2 class="text-sm font-semibold text-slate-800">ข้อมูลการบ้านซิงก์ตรงกับ LINE Notification</h2>
+                    <p id="last-updated-text" class="text-xs text-slate-500">อัปเดตล่าสุด: กำลังโหลดข้อมูล...</p>
                 </div>
             </div>
-            <button onclick="loadCalendarData()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap shadow-xs">
+            <button onclick="loadCalendarData()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
                 <i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล
             </button>
         </div>
 
         <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
             <!-- Left Column: Stats & Calendar -->
-            <div class="lg:col-span-8 flex flex-col gap-8">
+            <div class="lg:col-span-8 flex flex-col gap-6">
                 
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/70 flex flex-col justify-between">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">งานค้างทั้งหมด</span>
-                        <div class="flex items-baseline justify-between mt-3">
-                            <span id="stat-total" class="text-2xl font-bold text-blue-900">0</span>
-                            <span class="p-2 rounded-xl bg-blue-50 text-blue-800 text-xs"><i class="fa-solid fa-list-check"></i></span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="stat-total" class="text-2xl font-bold text-psu-blue">0</span>
+                            <span class="p-2 rounded-lg bg-blue-50 text-psu-blue text-xs"><i class="fa-solid fa-list-check"></i></span>
                         </div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/70 flex flex-col justify-between">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">ต้องส่งด่วน (≤3 วัน)</span>
-                        <div class="flex items-baseline justify-between mt-3">
+                        <div class="flex items-baseline justify-between mt-2">
                             <span id="stat-urgent" class="text-2xl font-bold text-rose-600">0</span>
-                            <span class="p-2 rounded-xl bg-rose-50 text-rose-600 text-xs"><i class="fa-solid fa-fire"></i></span>
+                            <span class="p-2 rounded-lg bg-rose-50 text-rose-600 text-xs"><i class="fa-solid fa-fire"></i></span>
                         </div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/70 flex flex-col justify-between">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">เหลือ > 3 วัน</span>
-                        <div class="flex items-baseline justify-between mt-3">
+                        <div class="flex items-baseline justify-between mt-2">
                             <span id="stat-normal" class="text-2xl font-bold text-amber-600">0</span>
-                            <span class="p-2 rounded-xl bg-amber-50 text-amber-600 text-xs"><i class="fa-solid fa-clock"></i></span>
+                            <span class="p-2 rounded-lg bg-amber-50 text-amber-600 text-xs"><i class="fa-solid fa-clock"></i></span>
                         </div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/70 flex flex-col justify-between">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">ทำเสร็จแล้ว</span>
-                        <div class="flex items-baseline justify-between mt-3">
+                        <div class="flex items-baseline justify-between mt-2">
                             <span id="stat-completed" class="text-2xl font-bold text-emerald-600">0</span>
-                            <span class="p-2 rounded-xl bg-emerald-50 text-emerald-600 text-xs"><i class="fa-solid fa-circle-check"></i></span>
+                            <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600 text-xs"><i class="fa-solid fa-circle-check"></i></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Calendar Card -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200/70 flex-grow">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex-grow">
                     
                     <!-- View Mode Switcher Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-900 flex items-center justify-center text-sm font-semibold">
-                                <i class="fa-solid fa-calendar-check"></i>
-                            </div>
-                            <h2 class="font-bold text-slate-800 text-base">ตารางกำหนดส่งงาน</h2>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-check text-psu-blue text-lg"></i>
+                            <h2 class="font-bold text-slate-800 text-base">ปฏิทินกำหนดส่งงาน</h2>
                         </div>
 
-                        <div class="flex items-center bg-slate-100/80 p-1 rounded-2xl text-xs font-medium self-start sm:self-auto">
-                            <button onclick="switchView('calendar')" id="tab-calendar" class="px-4 py-2 rounded-xl bg-white text-blue-900 shadow-sm font-semibold transition">
-                                <i class="fa-solid fa-calendar-days mr-1.5"></i> มุมมองปฏิทิน
+                        <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-medium self-start sm:self-auto">
+                            <button onclick="switchView('calendar')" id="tab-calendar" class="px-4 py-1.5 rounded-lg bg-white text-psu-blue shadow-sm font-semibold transition">
+                                <i class="fa-solid fa-calendar-days mr-1"></i> มุมมองปฏิทิน
                             </button>
-                            <button onclick="switchView('list')" id="tab-list" class="px-4 py-2 rounded-xl text-slate-600 hover:text-blue-900 transition">
-                                <i class="fa-solid fa-bars-staggered mr-1.5"></i> รายการภาระงาน
+                            <button onclick="switchView('list')" id="tab-list" class="px-4 py-1.5 rounded-lg text-slate-600 hover:text-psu-blue transition">
+                                <i class="fa-solid fa-bars-staggered mr-1"></i> รายการภาระงาน
                             </button>
                         </div>
                     </div>
 
                     <!-- VIEW 1: MONTHLY CALENDAR GRID -->
                     <div id="view-calendar-container" class="block">
-                        <div class="flex items-center justify-between mb-5">
-                            <button onclick="changeMonth(-1)" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition flex items-center gap-1.5 text-xs font-semibold">
+                        <div class="flex items-center justify-between mb-4">
+                            <button onclick="changeMonth(-1)" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition flex items-center gap-1 text-xs font-semibold">
                                 <i class="fa-solid fa-chevron-left"></i> เดือนก่อนหน้า
                             </button>
-                            <h3 id="calendar-month-year" class="font-bold text-slate-800 text-base tracking-wide">-- --</h3>
-                            <button onclick="changeMonth(1)" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition flex items-center gap-1.5 text-xs font-semibold">
+                            <h3 id="calendar-month-year" class="font-bold text-slate-800 text-base">-- --</h3>
+                            <button onclick="changeMonth(1)" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition flex items-center gap-1 text-xs font-semibold">
                                 เดือนถัดไป <i class="fa-solid fa-chevron-right"></i>
                             </button>
                         </div>
 
                         <!-- Days of Week Header -->
-                        <div class="grid grid-cols-7 gap-1 text-center font-semibold text-xs text-slate-400 mb-2">
+                        <div class="grid grid-cols-7 gap-1 text-center font-semibold text-xs text-slate-500 mb-2">
                             <div class="py-1 text-rose-500">อา.</div>
                             <div class="py-1">จ.</div>
                             <div class="py-1">อ.</div>
@@ -189,13 +187,13 @@
                         </div>
 
                         <!-- Calendar Grid -->
-                        <div id="calendar-grid" class="grid grid-cols-7 gap-1.5 bg-slate-100/60 p-1.5 rounded-2xl border border-slate-200/60">
+                        <div id="calendar-grid" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200">
                             <!-- Dynamic Calendar Cells -->
                         </div>
 
                         <!-- Filter Status Bar -->
-                        <div id="filter-bar" class="mt-5 p-3.5 rounded-2xl bg-blue-50/80 border border-blue-100 text-xs items-center justify-between hidden">
-                            <span id="filter-text" class="text-blue-900 font-medium">กำลังแสดงงานเฉพาะวันที่เลือก</span>
+                        <div id="filter-bar" class="mt-4 p-3 rounded-xl bg-blue-50 border border-blue-100 text-xs items-center justify-between hidden">
+                            <span id="filter-text" class="text-psu-blue font-medium">กำลังแสดงงานเฉพาะวันที่เลือก</span>
                             <button onclick="clearDateFilter()" class="text-rose-600 hover:underline font-semibold flex items-center gap-1">
                                 <i class="fa-solid fa-xmark"></i> แสดงงานทั้งหมด
                             </button>
@@ -204,16 +202,16 @@
 
                     <!-- VIEW 2: TASK LIST -->
                     <div id="view-list-container" class="hidden">
-                        <div class="flex items-center justify-between mb-4 text-xs text-slate-500">
-                            <span id="list-title-text" class="font-medium">รายการภาระงานทั้งหมด</span>
-                            <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
-                                <button onclick="setListFilter('all')" id="btn-filter-all" class="px-3 py-1 rounded-lg bg-blue-900 text-white font-medium text-[11px]">ทั้งหมด</button>
-                                <button onclick="setListFilter('pending')" id="btn-filter-pending" class="px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200 font-medium text-[11px]">ยังไม่เสร็จ</button>
-                                <button onclick="setListFilter('completed')" id="btn-filter-completed" class="px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200 font-medium text-[11px]">ทำเสร็จแล้ว</button>
+                        <div class="flex items-center justify-between mb-3 text-xs text-slate-500">
+                            <span id="list-title-text">รายการภาระงานทั้งหมด</span>
+                            <div class="flex gap-2">
+                                <button onclick="setListFilter('all')" id="btn-filter-all" class="px-2.5 py-1 rounded-lg bg-psu-blue text-white font-medium text-[11px]">ทั้งหมด</button>
+                                <button onclick="setListFilter('pending')" id="btn-filter-pending" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium text-[11px]">ยังไม่เสร็จ</button>
+                                <button onclick="setListFilter('completed')" id="btn-filter-completed" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium text-[11px]">ทำเสร็จแล้ว</button>
                             </div>
                         </div>
 
-                        <div id="tasks-container" class="space-y-3 max-h-[520px] overflow-y-auto pr-1">
+                        <div id="tasks-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
                             <!-- Dynamic Task Cards -->
                         </div>
                     </div>
@@ -222,60 +220,58 @@
 
             </div>
 
-            <!-- Right Column: LINE Flex Live Preview -->
-            <div class="lg:col-span-4 flex flex-col gap-8">
+            <div class="lg:col-span-4 flex flex-col gap-6">
 
-                <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800">
-                    <div class="flex items-center justify-between mb-5 pb-4 border-b border-slate-800">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                                <i class="fa-brands fa-line text-2xl text-emerald-400"></i>
-                            </div>
+                <!-- LINE Flex Message Live Preview -->
+                <div class="bg-slate-800 rounded-2xl p-5 text-white shadow-md border border-slate-700">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-brands fa-line text-2xl text-emerald-400"></i>
                             <div>
                                 <h3 class="font-semibold text-sm">LINE Flex Preview</h3>
-                                <p class="text-xs text-slate-400">ตัวอย่างการ์ดแจ้งเตือนบน LINE</p>
+                                <p class="text-xs text-slate-400">ตัวอย่างข้อความที่จะแจ้งเตือนเข้า LINE</p>
                             </div>
                         </div>
-                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-2.5 py-0.5 rounded-full font-medium">Live Sync</span>
+                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full font-medium">Live Sync</span>
                     </div>
 
                     <!-- Flex Card Switcher Tabs -->
-                    <div class="flex bg-slate-800 p-1 rounded-2xl text-xs font-medium mb-5 gap-1">
-                        <button onclick="switchFlexCard('urgent')" id="flex-tab-urgent" class="flex-1 py-2 rounded-xl bg-rose-600 text-white font-semibold transition text-center text-[11px]">
+                    <div class="flex bg-slate-700/60 p-1 rounded-xl text-xs font-medium mb-4 gap-1">
+                        <button onclick="switchFlexCard('urgent')" id="flex-tab-urgent" class="flex-1 py-1.5 rounded-lg bg-rose-600 text-white font-semibold transition text-center text-[11px]">
                             🚨 การ์ดงานเร่งด่วน
                         </button>
-                        <button onclick="switchFlexCard('all')" id="flex-tab-all" class="flex-1 py-2 rounded-xl text-slate-400 hover:text-white transition text-center text-[11px]">
+                        <button onclick="switchFlexCard('all')" id="flex-tab-all" class="flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]">
                             📚 การ์ดงานทั้งหมด
                         </button>
                     </div>
 
                     <!-- LINE Bubble Mockup Container -->
-                    <div class="bg-slate-200 p-3.5 rounded-2xl text-slate-900 line-bubble-shadow max-w-sm mx-auto overflow-hidden">
+                    <div class="bg-slate-200 p-3 rounded-xl text-slate-900 line-bubble-shadow max-w-sm mx-auto overflow-hidden">
                         
                         <!-- CARD 1: URGENT FLEX CARD -->
                         <div id="flex-card-urgent-view" class="block">
-                            <div id="flex-urgent-header" class="bg-[#DC3545] text-white p-4 rounded-t-xl">
+                            <div id="flex-urgent-header" class="bg-[#DC3545] text-white p-3.5 rounded-t-xl">
                                 <div class="text-[10px] font-bold tracking-wider text-[#FFC107]">PSU LMS URGENT ALERT</div>
                                 <div id="flex-urgent-title" class="text-base font-bold mt-0.5">🚨 งานใกล้หมดเวลา</div>
                                 <div id="flex-urgent-date" class="text-[11px] text-slate-200 mt-0.5">ประจำวันที่ --/--/----</div>
                             </div>
-                            <div id="flex-urgent-body" class="bg-white p-4 space-y-3 text-xs min-h-[130px]">
+                            <div id="flex-urgent-body" class="bg-white p-3.5 space-y-3 text-xs min-h-[120px]">
                                 <div class="text-center py-6 text-slate-400">กำลังโหลด...</div>
                             </div>
                         </div>
 
                         <!-- CARD 2: ALL TASKS FLEX CARD -->
                         <div id="flex-card-all-view" class="hidden">
-                            <div class="bg-[#003366] text-white p-4 rounded-t-xl">
+                            <div class="bg-[#003366] text-white p-3.5 rounded-t-xl">
                                 <div class="text-[10px] font-bold tracking-wider text-[#80BFFF]">PSU LMS ALL TASKS</div>
                                 <div id="flex-all-title" class="text-base font-bold mt-0.5">📚 สรุปงานค้างทั้งหมด</div>
                                 <div id="flex-all-date" class="text-[11px] text-slate-200 mt-0.5">ประจำวันที่ --/--/----</div>
                             </div>
-                            <div id="flex-all-body" class="bg-white p-4 space-y-3 text-xs min-h-[130px]">
+                            <div id="flex-all-body" class="bg-white p-3.5 space-y-3 text-xs min-h-[120px]">
                                 <div class="text-center py-6 text-slate-400">กำลังโหลด...</div>
                             </div>
                             <div class="bg-white p-3 pt-0 rounded-b-xl border-t border-slate-100">
-                                <a href="https://lms2.psu.ac.th" target="_blank" class="block w-full text-center bg-[#003366] hover:bg-blue-900 text-white font-medium py-2 rounded-xl text-xs transition">
+                                <a href="https://lms2.psu.ac.th" target="_blank" class="block w-full text-center bg-[#003366] hover:bg-blue-900 text-white font-medium py-2 rounded-lg text-xs transition">
                                     เข้าสู่ระบบ PSU LMS2
                                 </a>
                             </div>
@@ -290,10 +286,9 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200/80 mt-auto py-5">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
-            Prince of Songkla University • PSU LMS Assignment Calendar & Dashboard
+    <footer class="bg-white border-t border-slate-200 mt-auto py-4">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติทุกๆ 2 ชั่วโมง
         </div>
     </footer>
 
@@ -306,8 +301,9 @@
         let currentDisplayDate = new Date();
         let selectedFilterDateStr = null;
         let activeFlexTab = 'urgent';
-        let currentStatusFilter = 'all';
+        let currentStatusFilter = 'all'; // all, pending, completed
 
+        // โหลด ID งานที่ทำเสร็จแล้วจาก localStorage
         function getCompletedTaskIds() {
             try {
                 return JSON.parse(localStorage.getItem('psu_lms_completed_tasks')) || [];
@@ -316,10 +312,12 @@
             }
         }
 
+        // บันทึก ID งานที่เสร็จแล้วลง localStorage
         function saveCompletedTaskIds(completedIds) {
             localStorage.setItem('psu_lms_completed_tasks', JSON.stringify(completedIds));
         }
 
+        // สลับสถานะการเสร็จสิ้นของงาน (Toggle Completed State)
         function toggleTaskStatus(taskId) {
             let completedIds = getCompletedTaskIds();
             const isNowCompleted = !completedIds.includes(taskId);
@@ -342,11 +340,13 @@
 
             renderDashboard();
 
+            // 🔔 ถ้ากดติ๊กเปลี่ยนสถานะเป็น "ทำเสร็จแล้ว" ให้ส่งแจ้งเตือนเข้า LINE ทันที
             if (isNowCompleted && updatedTaskTitle) {
                 sendLineTaskDoneNotification(updatedTaskTitle);
             }
         }
 
+        // ปุ่มสำหรับรีเซ็ตหรือใส่นิพจน์ PAT ใหม่ด้วยตัวเอง
         function resetGithubPat() {
             const newPat = prompt("🔑 ใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อใช้ส่งแจ้งเตือนเข้า LINE:");
             if (newPat && newPat.trim()) {
@@ -355,6 +355,7 @@
             }
         }
 
+        // ฟังก์ชันส่งสัญญาณเข้า GitHub Actions เพื่อยิง LINE Notify
         async function sendLineTaskDoneNotification(taskTitle) {
             let pat = localStorage.getItem('psu_github_pat');
             
@@ -404,7 +405,7 @@
 
         function filterExpiredEvents(events) {
             const now = new Date();
-            const graceMs = 2 * 60 * 60 * 1000;
+            const graceMs = 2 * 60 * 60 * 1000; // 2 ชั่วโมง
             return events.filter(e => e.due_date && (e.due_date.getTime() >= (now.getTime() - graceMs)));
         }
 
@@ -554,13 +555,13 @@
             const viewList = document.getElementById('view-list-container');
 
             if (mode === 'calendar') {
-                tabCal.className = "px-4 py-2 rounded-xl bg-white text-blue-900 shadow-sm font-semibold transition";
-                tabList.className = "px-4 py-2 rounded-xl text-slate-600 hover:text-blue-900 transition";
+                tabCal.className = "px-4 py-1.5 rounded-lg bg-white text-psu-blue shadow-sm font-semibold transition";
+                tabList.className = "px-4 py-1.5 rounded-lg text-slate-600 hover:text-psu-blue transition";
                 viewCal.classList.remove('hidden');
                 viewList.classList.add('hidden');
             } else {
-                tabList.className = "px-4 py-2 rounded-xl bg-white text-blue-900 shadow-sm font-semibold transition";
-                tabCal.className = "px-4 py-2 rounded-xl text-slate-600 hover:text-blue-900 transition";
+                tabList.className = "px-4 py-1.5 rounded-lg bg-white text-psu-blue shadow-sm font-semibold transition";
+                tabCal.className = "px-4 py-1.5 rounded-lg text-slate-600 hover:text-psu-blue transition";
                 viewList.classList.remove('hidden');
                 viewCal.classList.add('hidden');
             }
@@ -594,7 +595,7 @@
 
             for (let i = firstDayIndex - 1; i >= 0; i--) {
                 const dayNum = prevMonthDays - i;
-                html += `<div class="bg-slate-50/40 p-2 calendar-day-cell rounded-2xl opacity-25 text-xs font-medium text-slate-400">${dayNum}</div>`;
+                html += `<div class="bg-slate-50/50 p-2 calendar-day-cell rounded-xl opacity-30 text-xs font-medium text-slate-400">${dayNum}</div>`;
             }
 
             for (let day = 1; day <= daysInMonth; day++) {
@@ -609,14 +610,14 @@
 
                 const pendingDayEvents = dayEvents.filter(e => !e.completed);
 
-                let borderStyle = isSelected ? "ring-2 ring-blue-800 bg-blue-50/60" : "bg-white";
-                let todayBadge = isToday ? "bg-blue-900 text-white font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-xs" : "text-slate-700 font-semibold";
+                let borderStyle = isSelected ? "ring-2 ring-psu-blue bg-blue-50/80" : "bg-white";
+                let todayBadge = isToday ? "bg-psu-blue text-white font-bold rounded-full w-5 h-5 flex items-center justify-center" : "text-slate-700 font-semibold";
 
                 html += `
-                    <div onclick="selectDateFilter('${dateKey}')" class="${borderStyle} p-2 calendar-day-cell rounded-2xl border border-slate-200/80 cursor-pointer flex flex-col justify-between hover:border-blue-800 shadow-2xs relative">
+                    <div onclick="selectDateFilter('${dateKey}')" class="${borderStyle} p-1.5 calendar-day-cell rounded-xl border border-slate-200/80 cursor-pointer flex flex-col justify-between hover:border-psu-blue shadow-2xs relative">
                         <div class="flex items-center justify-between text-xs">
                             <span class="${todayBadge}">${day}</span>
-                            ${pendingDayEvents.length > 0 ? `<span class="bg-blue-900 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">${pendingDayEvents.length}</span>` : ''}
+                            ${pendingDayEvents.length > 0 ? `<span class="bg-psu-blue text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">${pendingDayEvents.length}</span>` : ''}
                         </div>
                         
                         <div class="mt-1 space-y-1 max-h-[45px] overflow-hidden">
@@ -636,7 +637,7 @@
                                 const titleText = e.completed ? `<del class="text-slate-400">${e.title}</del>` : e.title;
 
                                 return `
-                                    <div class="text-[10px] bg-slate-50 p-1 rounded-lg border-l-2 ${colorClass.replace('bg-', 'border-')} truncate text-slate-700 font-medium leading-none">
+                                    <div class="text-[10px] bg-slate-100 p-1 rounded-lg border-l-2 ${colorClass.replace('bg-', 'border-')} truncate text-slate-700 font-medium leading-none">
                                         ${titleText}
                                     </div>
                                 `;
@@ -678,8 +679,8 @@
             const btnPending = document.getElementById('btn-filter-pending');
             const btnCompleted = document.getElementById('btn-filter-completed');
 
-            const activeClass = "px-3 py-1 rounded-lg bg-blue-900 text-white font-medium text-[11px]";
-            const inactiveClass = "px-3 py-1 rounded-lg text-slate-600 hover:bg-slate-200 font-medium text-[11px]";
+            const activeClass = "px-2.5 py-1 rounded-lg bg-psu-blue text-white font-medium text-[11px]";
+            const inactiveClass = "px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium text-[11px]";
 
             btnAll.className = status === 'all' ? activeClass : inactiveClass;
             btnPending.className = status === 'pending' ? activeClass : inactiveClass;
@@ -710,7 +711,7 @@
 
             if (!displayList || displayList.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-12 bg-slate-50/70 rounded-2xl border border-dashed border-slate-200">
+                    <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                         <i class="fa-solid fa-circle-check text-3xl text-emerald-500 mb-2"></i>
                         <h3 class="font-bold text-slate-700 text-sm">ไม่พบรายการภาระงาน</h3>
                         <p class="text-xs text-slate-500 mt-1">ไม่มีงานค้างอยู่ในเงื่อนไขนี้ครับ</p>
@@ -725,17 +726,17 @@
                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
                 const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-                let badgeBg = "bg-emerald-50 text-emerald-700 border-emerald-200/80";
+                let badgeBg = "bg-emerald-100 text-emerald-700 border-emerald-200";
                 let badgeText = `📌 เหลือ ${diffDays} วัน`;
 
                 if (item.completed) {
-                    badgeBg = "bg-slate-100 text-slate-400 border-slate-200/80";
+                    badgeBg = "bg-slate-100 text-slate-500 border-slate-200";
                     badgeText = "✓ ทำเสร็จแล้ว";
                 } else if (diffDays < 1) {
-                    badgeBg = "bg-rose-50 text-rose-700 border-rose-200/80 animate-pulse";
+                    badgeBg = "bg-rose-100 text-rose-700 border-rose-200 animate-pulse";
                     badgeText = "🚨 ด่วนมาก!";
                 } else if (diffDays <= 3) {
-                    badgeBg = "bg-amber-50 text-amber-700 border-amber-200/80";
+                    badgeBg = "bg-amber-100 text-amber-700 border-amber-200";
                     badgeText = `⚠️ เหลือ ${diffDays} วัน ${diffHours} ชม.`;
                 }
 
@@ -744,16 +745,16 @@
                 }) + ' น.';
 
                 const cardStyle = item.completed 
-                    ? "bg-slate-50/60 border-slate-200/70 opacity-70" 
-                    : "bg-slate-50/80 hover:bg-blue-50/30 border-slate-200/80";
+                    ? "bg-slate-50/70 border-slate-200 opacity-75" 
+                    : "bg-slate-50 hover:bg-blue-50/40 border-slate-200";
 
                 const titleStyle = item.completed 
                     ? "line-through text-slate-400 font-normal" 
                     : "text-slate-800 font-bold";
 
                 html += `
-                    <div class="p-4 ${cardStyle} rounded-2xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-                        <div class="flex items-start gap-3.5 flex-grow">
+                    <div class="p-3.5 ${cardStyle} rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-start gap-3 flex-grow">
                             <button onclick="toggleTaskStatus('${item.id}')" title="เปลี่ยนสถานะ" class="mt-0.5 text-lg transition transform active:scale-95 focus:outline-none">
                                 ${item.completed 
                                     ? '<i class="fa-solid fa-circle-check text-emerald-500 hover:text-emerald-600"></i>' 
@@ -769,8 +770,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between sm:justify-end gap-2 pl-8 sm:pl-0">
-                            <span class="inline-block px-3 py-1 rounded-xl text-xs font-semibold border ${badgeBg} whitespace-nowrap shadow-2xs">
+                        <div class="flex items-center justify-between sm:justify-end gap-2 pl-7 sm:pl-0">
+                            <span class="inline-block px-3 py-1 rounded-lg text-xs font-semibold border ${badgeBg} whitespace-nowrap">
                                 ${badgeText}
                             </span>
                         </div>
@@ -789,13 +790,13 @@
             const viewAll = document.getElementById('flex-card-all-view');
 
             if (cardType === 'urgent') {
-                tabUrgent.className = "flex-1 py-2 rounded-xl bg-rose-600 text-white font-semibold transition text-center text-[11px]";
-                tabAll.className = "flex-1 py-2 rounded-xl text-slate-400 hover:text-white transition text-center text-[11px]";
+                tabUrgent.className = "flex-1 py-1.5 rounded-lg bg-rose-600 text-white font-semibold transition text-center text-[11px]";
+                tabAll.className = "flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]";
                 viewUrgent.classList.remove('hidden');
                 viewAll.classList.add('hidden');
             } else {
-                tabAll.className = "flex-1 py-2 rounded-xl bg-blue-900 text-white font-semibold transition text-center text-[11px]";
-                tabUrgent.className = "flex-1 py-2 rounded-xl text-slate-400 hover:text-white transition text-center text-[11px]";
+                tabAll.className = "flex-1 py-1.5 rounded-lg bg-psu-blue text-white font-semibold transition text-center text-[11px]";
+                tabUrgent.className = "flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]";
                 viewAll.classList.remove('hidden');
                 viewUrgent.classList.add('hidden');
             }
@@ -840,7 +841,7 @@
                     }) + ' น.';
 
                     html += `
-                        <div class="${idx > 0 ? 'pt-2.5 border-t border-slate-100' : ''}">
+                        <div class="${idx > 0 ? 'pt-2 border-t border-slate-100' : ''}">
                             <div class="flex items-start justify-between gap-1">
                                 <span class="font-bold text-slate-800 text-xs flex-grow leading-tight">${idx + 1}. ${item.title}</span>
                                 <span class="${badgeBg} text-white text-[9px] px-1.5 py-0.5 rounded font-bold whitespace-nowrap">${badgeText}</span>
@@ -875,7 +876,7 @@
                     }) + ' น.';
 
                     html += `
-                        <div class="${idx > 0 ? 'pt-2.5 border-t border-slate-100' : ''}">
+                        <div class="${idx > 0 ? 'pt-2 border-t border-slate-100' : ''}">
                             <div class="flex items-start justify-between gap-1">
                                 <span class="font-bold text-slate-800 text-xs flex-grow leading-tight">${idx + 1}. ${item.title}</span>
                                 <span class="text-[#0055a5] font-bold text-[10px]">อีก ${diffDays} วัน</span>
