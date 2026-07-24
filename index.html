@@ -110,6 +110,17 @@
                     ดึงข้อมูลปฏิทินการบ้าน
                 </button>
             </div>
+            <div id="fetch-error-banner" class="hidden mt-3 p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs flex flex-col gap-2">
+                <div class="flex items-center gap-2 font-semibold">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                    ไม่สามารถดึงข้อมูลอัตโนมัติผ่าน CORS Proxy ได้ชั่วคราว
+                </div>
+                <p>ท่านสามารถคัดลอกข้อความ iCal หรือไฟล์ .ics วางในกล่องด้านล่างเพื่ออัปเดตข้อมูลตรงได้ทันที:</p>
+                <textarea id="manual-ical-text" rows="3" placeholder="วางข้อความจากไฟล์ iCal (.ics) ที่นี่..." class="w-full p-2 bg-white border border-amber-300 rounded-lg text-xs font-mono"></textarea>
+                <button onclick="parseManualICalText()" class="self-end bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium">
+                    อ่านข้อมูลจากข้อความ iCal
+                </button>
+            </div>
         </div>
 
         <!-- Main Grid Layout -->
@@ -294,45 +305,42 @@
         let selectedFilterDateStr = null; // YYYY-MM-DD filter state
         let currentView = 'calendar'; // 'calendar' or 'list'
 
-        // Sample Backup Data for previewing
-        const sampleEvents = [
-            {
-                title: "ส่งรายงานโครงงานวิจัยบทที่ 1-3",
-                due_date: new Date(Date.now() + 18 * 3600 * 1000), // ~18 hours from now
-                description: "รายวิชา 240-491 Computer Engineering Project I"
-            },
-            {
-                title: "Quiz 2: Database Normalization",
-                due_date: new Date(Date.now() + 48 * 3600 * 1000), // ~2 days
-                description: "รายวิชา 240-205 Database Systems"
-            },
-            {
-                title: "Assignment 4: Binary Search Tree",
-                due_date: new Date(Date.now() + 120 * 3600 * 1000), // ~5 days
-                description: "รายวิชา 240-201 Data Structures"
-            },
-            {
-                title: "Lab 8: Network Socket Programming",
-                due_date: new Date(Date.now() + 240 * 3600 * 1000), // ~10 days
-                description: "รายวิชา 240-302 Computer Networks"
-            }
-        ];
-
         window.onload = function() {
             loadCalendarData();
         };
 
-        function parseICalDateTime(dtStr) {
-            let cleanStr = dtStr.split(':').pop().trim();
+        function unfoldICal(text) {
+            return text.replace(/\r?\n[ \t]/g, '');
+        }
+
+        function unescapeICal(str) {
+            if (!str) return '';
+            return str
+                .replace(/\\,/g, ',')
+                .replace(/\\;/g, ';')
+                .replace(/\\n/gi, '\n')
+                .replace(/\\\\/g, '\\');
+        }
+
+        function parseICalDateTime(dtLine) {
+            const parts = dtLine.split(':');
+            const dtVal = parts[parts.length - 1].trim();
+            const isUtc = dtVal.endsWith('Z');
+            const cleanStr = dtVal.replace('Z', '');
+
             if (cleanStr.includes('T')) {
-                cleanStr = cleanStr.replace('Z', '');
                 const year = parseInt(cleanStr.substring(0, 4));
                 const month = parseInt(cleanStr.substring(4, 6)) - 1;
                 const day = parseInt(cleanStr.substring(6, 8));
                 const hour = parseInt(cleanStr.substring(9, 11));
                 const min = parseInt(cleanStr.substring(11, 13));
                 const sec = parseInt(cleanStr.substring(13, 15)) || 0;
-                return new Date(Date.UTC(year, month, day, hour, min, sec));
+
+                if (isUtc) {
+                    return new Date(Date.UTC(year, month, day, hour, min, sec));
+                } else {
+                    return new Date(year, month, day, hour, min, sec);
+                }
             } else {
                 const year = parseInt(cleanStr.substring(0, 4));
                 const month = parseInt(cleanStr.substring(4, 6)) - 1;
@@ -341,33 +349,49 @@
             }
         }
 
+        async function fetchWithProxies(targetUrl) {
+            const proxyUrls = [
+                `https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
+            ];
+
+            for (const pUrl of proxyUrls) {
+                try {
+                    const res = await fetch(pUrl, { signal: AbortSignal.timeout(5000) });
+                    if (res.ok) {
+                        const txt = await res.text();
+                        if (txt.includes('BEGIN:VCALENDAR') || txt.includes('BEGIN:VEVENT')) {
+                            return txt;
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Proxy failed:", pUrl);
+                }
+            }
+            return null;
+        }
+
         async function loadCalendarData() {
             const urlInput = document.getElementById('ical-url-input').value.trim();
             const btnFetch = document.getElementById('btn-fetch');
+            const errBanner = document.getElementById('fetch-error-banner');
 
             btnFetch.disabled = true;
-            btnFetch.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังโหลด...`;
-            
-            let rawContent = "";
-            let success = false;
+            btnFetch.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังดึงข้อมูล...`;
+            errBanner.classList.add('hidden');
+
+            let rawContent = null;
 
             if (urlInput) {
-                try {
-                    const corsProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlInput)}`;
-                    const response = await fetch(corsProxyUrl);
-                    if (response.ok) {
-                        rawContent = await response.text();
-                        success = true;
-                    }
-                } catch (e) {
-                    console.warn("CORS fetch failed, falling back to preview sample data.");
-                }
+                rawContent = await fetchWithProxies(urlInput);
             }
 
-            if (success && rawContent.includes('BEGIN:VEVENT')) {
+            if (rawContent) {
                 fetchedEvents = parseICalContent(rawContent);
             } else {
-                fetchedEvents = sampleEvents;
+                errBanner.classList.remove('hidden');
+                fetchedEvents = [];
             }
 
             renderDashboard();
@@ -379,27 +403,45 @@
             document.getElementById('last-updated').innerText = `อัปเดตล่าสุด: ${now.toLocaleTimeString('th-TH')}`;
         }
 
+        function parseManualICalText() {
+            const txt = document.getElementById('manual-ical-text').value.trim();
+            if (txt && (txt.includes('BEGIN:VCALENDAR') || txt.includes('BEGIN:VEVENT'))) {
+                fetchedEvents = parseICalContent(txt);
+                renderDashboard();
+                document.getElementById('fetch-error-banner').classList.add('hidden');
+            } else {
+                alert('รูปแบบข้อความ iCal ไม่ถูกต้อง กรุณาตรวจสอบข้อความอีกครั้ง');
+            }
+        }
+
         function parseICalContent(content) {
             const events = [];
-            const rawEvents = content.split('BEGIN:VEVENT');
+            const unfolded = unfoldICal(content);
+            const rawEvents = unfolded.split('BEGIN:VEVENT');
             const now = new Date();
 
             for (let i = 1; i < rawEvents.length; i++) {
                 const block = rawEvents[i];
                 const summaryMatch = block.match(/SUMMARY:(.*)/);
-                const dtendMatch = block.match(/DTEND.*:(.*)/);
-                const dtstartMatch = block.match(/DTSTART.*:(.*)/);
+                const dtendMatch = block.match(/DTEND[^\n]*:(.*)/);
+                const dtstartMatch = block.match(/DTSTART[^\n]*:(.*)/);
                 const descMatch = block.match(/DESCRIPTION:(.*)/);
 
                 if (!summaryMatch) continue;
 
-                const title = summaryMatch[1].trim().replace(/\\/g, '');
-                const dtTarget = dtendMatch ? dtendMatch[1] : (dtstartMatch ? dtstartMatch[1] : null);
+                const title = unescapeICal(summaryMatch[1].strip ? summaryMatch[1].strip() : summaryMatch[1].trim());
+                const dtTarget = dtendMatch ? dtendMatch[0] : (dtstartMatch ? dtstartMatch[0] : null);
 
                 if (!dtTarget) continue;
 
-                let dueDate = parseICalDateTime(dtTarget);
-                const description = descMatch ? descMatch[1].trim() : "";
+                let dueDate;
+                try {
+                    dueDate = parseICalDateTime(dtTarget);
+                } catch (e) {
+                    continue;
+                }
+
+                const description = descMatch ? unescapeICal(descMatch[1].trim()) : "";
 
                 if (dueDate >= new Date(now.getTime() - 2 * 3600 * 1000)) {
                     events.push({
