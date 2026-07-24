@@ -1,62 +1,42 @@
-name: Mark Task as Done
+name: PSU LMS Daily LINE Notifier
 on:
-  issues:
-    types: [opened]
+  schedule:
+    # รันวันละ 4 รอบ เวลาไทย: 07:00, 12:00, 18:00, 23:00
+    # GitHub Actions ใช้เวลา UTC เสมอ (ไทย = UTC+7) จึงตั้งเป็น 00:00, 05:00, 11:00, 16:00 UTC
+    - cron: '0 0,5,11,16 * * *'
+  workflow_dispatch: # ปุ่มกดสั่งรันด้วยตัวเองเพื่อทดสอบ
 
+# ให้สิทธิ์ job นี้ push กลับเข้า repo ได้ (จำเป็นสำหรับ step commit data.json)
 permissions:
   contents: write
-  issues: write
 
 jobs:
-  mark-done:
-    # ทำงานเฉพาะ issue ที่ title ขึ้นต้นด้วย "done:" และเปิดโดยเจ้าของ repo เท่านั้น (กัน spam)
-    if: startsWith(github.event.issue.title, 'done:') && github.event.issue.user.login == github.repository_owner
+  notify:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Extract task_id and update completed_tasks.json
-        run: |
-          TITLE="${{ github.event.issue.title }}"
-          # ดึงส่วน "done:XXXXXXXX" แล้วตัดเอาแค่รหัส 8 ตัว
-          TASK_ID=$(echo "$TITLE" | sed -n 's/^done:\([a-f0-9]\{8\}\).*/\1/p')
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-          if [ -z "$TASK_ID" ]; then
-            echo "❌ ไม่พบ task_id ที่ถูกต้องใน title: $TITLE"
-            exit 1
-          fi
+      - name: Run LINE Notifier
+        env:
+          LMS_ICAL_URL: ${{ secrets.LMS_ICAL_URL }}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+        run: python main.py
 
-          echo "📌 task_id ที่จะ mark ว่าเสร็จแล้ว: $TASK_ID"
-
-          if [ ! -f completed_tasks.json ]; then
-            echo '{"completed": []}' > completed_tasks.json
-          fi
-
-          python3 - "$TASK_ID" <<'EOF'
-          import json, sys
-          task_id = sys.argv[1]
-          with open("completed_tasks.json", "r", encoding="utf-8") as f:
-              data = json.load(f)
-          ids = set(data.get("completed", []))
-          ids.add(task_id)
-          data["completed"] = sorted(ids)
-          with open("completed_tasks.json", "w", encoding="utf-8") as f:
-              json.dump(data, f, ensure_ascii=False, indent=2)
-          EOF
-
-      - name: Commit and push completed_tasks.json
+      - name: Commit and push data.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add completed_tasks.json
-          git commit -m "✅ mark task done via issue #${{ github.event.issue.number }} [skip ci]"
-          git push
-
-      - name: Close the issue
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue close ${{ github.event.issue.number }} \
-            --repo ${{ github.repository }} \
-            --comment "✅ บันทึกสถานะ 'ทำแล้ว' เรียบร้อยครับ"
+          git add data.json
+          if git diff --cached --quiet; then
+            echo "ℹ️ ไม่มีการเปลี่ยนแปลงข้อมูล ไม่ต้อง commit"
+          else
+            git commit -m "🤖 อัปเดต data.json อัตโนมัติ [skip ci]"
+            git push
+          fi
