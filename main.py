@@ -23,7 +23,7 @@ LINE_USER_ID = os.environ.get(
 TZ_OFFSET = timedelta(hours=7)
 
 def clean_ical_url(url):
-    """ลบอักขระส่วนเกินที่อาจติดมาจาก Secret"""
+    """ลบอักขระส่วนเกินที่อาจติดมาจาก Secret หรือการ Copy"""
     if not url:
         return ""
     url = url.strip()
@@ -43,11 +43,7 @@ def unescape_ical(text):
     return text.replace('\\,', ',').replace('\\;', ';').replace('\\n', '\n').replace('\\N', '\n').replace('\\\\', '\\')
 
 def parse_ical_datetime(dt_line):
-    """
-    แปลงวันที่เวลาจาก iCal อย่างแม่นยำ
-    - ถ้าเป็น UTC (มี Z ลงท้าย) -> บวก 7 ชั่วโมงเปลี่ยนเป็นเวลาไทย
-    - ถ้าเป็นเวลาท้องถิ่นแล้ว -> คงเวลาเดิมไว้ ไม่บวกซ้ำ
-    """
+    """แปลงวันที่เวลาจาก iCal อย่างแม่นยำ"""
     parts = dt_line.split(':')
     dt_val = parts[-1].strip()
     is_utc = dt_val.endswith('Z')
@@ -75,9 +71,7 @@ def fetch_lms_events(ical_url):
     with urllib.request.urlopen(req) as response:
         content = response.read().decode('utf-8')
 
-    # ปลด Line Folding
     content = unfold_ical(content)
-
     events = []
     raw_events = content.split('BEGIN:VEVENT')
     now_local = datetime.utcnow() + TZ_OFFSET
@@ -110,32 +104,38 @@ def fetch_lms_events(ical_url):
             events.append({
                 'title': title,
                 'due_date': due_date,
+                'due_date_iso': due_date.isoformat(),
                 'description': description
             })
 
-    # เรียงลำดับงานตามวันส่งใกล้วันที่สุดขึ้นก่อน
     events.sort(key=lambda x: x['due_date'])
     return events
 
-def create_flex_message(events):
-    """สร้าง LINE Flex Message สวยงามพร้อมสีสันและปุ่มกด"""
-    now = datetime.utcnow() + TZ_OFFSET
+def create_urgent_tasks_flex(events, now):
+    """สร้าง Flex Card ใบที่ 1: เน้นเฉพาะงานที่ใกล้หมดเวลาส่ง (ส่งภายใน 3 วัน)"""
     today_str = now.strftime("%d/%m/%Y")
+    
+    # กรองเฉพาะงานที่เหลือเวลา <= 3 วัน
+    urgent_events = []
+    for item in events:
+        time_left = item['due_date'] - now
+        if time_left.days <= 3:
+            urgent_events.append(item)
 
-    if not events:
-        # Flex Card เมื่อไม่มีงานค้าง
+    if not urgent_events:
+        # การ์ดเมื่อไม่มีงานเร่งด่วน
         return {
             "type": "flex",
-            "altText": f"🎉 PSU LMS: ไม่มีงานค้างประจำวันที่ {today_str}",
+            "altText": f"✅ PSU LMS: ไม่มีงานเร่งด่วนภายใน 3 วันนี้ ({today_str})",
             "contents": {
                 "type": "bubble",
                 "header": {
                     "type": "box",
                     "layout": "vertical",
-                    "backgroundColor": "#003366",
+                    "backgroundColor": "#198754", # สีเขียว
                     "contents": [
-                        {"type": "text", "text": "PSU LMS NOTIFIER", "weight": "bold", "color": "#80BFFF", "size": "xs"},
-                        {"type": "text", "text": "รายงานภาระงานค้าง", "weight": "bold", "color": "#FFFFFF", "size": "lg", "margin": "xs"},
+                        {"type": "text", "text": "PSU LMS URGENT ALERT", "weight": "bold", "color": "#A3E635", "size": "xs"},
+                        {"type": "text", "text": "🚨 งานที่ใกล้หมดเวลาส่ง", "weight": "bold", "color": "#FFFFFF", "size": "lg", "margin": "xs"},
                         {"type": "text", "text": f"ประจำวันที่ {today_str}", "color": "#E0E0E0", "size": "xs", "margin": "xs"}
                     ]
                 },
@@ -143,43 +143,27 @@ def create_flex_message(events):
                     "type": "box",
                     "layout": "vertical",
                     "contents": [
-                        {"type": "text", "text": "🎉 ยินดีด้วย!", "size": "xl", "weight": "bold", "align": "center", "color": "#28A745"},
-                        {"type": "text", "text": "ขณะนี้ไม่มีงานค้างในระบบ PSU LMS", "size": "sm", "align": "center", "color": "#666666", "margin": "md"}
-                    ]
-                },
-                "footer": {
-                    "type": "box",
-                    "layout": "vertical",
-                    "contents": [
-                        {
-                            "type": "button",
-                            "action": {"type": "uri", "label": "เข้าสู่ระบบ PSU LMS", "uri": "https://lms2.psu.ac.th"},
-                            "style": "primary",
-                            "color": "#003366"
-                        }
+                        {"type": "text", "text": "🎉 ชิลๆ ได้เลย!", "size": "xl", "weight": "bold", "align": "center", "color": "#198754"},
+                        {"type": "text", "text": "ไม่มีงานที่มีกำหนดส่งภายใน 3 วันนี้ครับ", "size": "sm", "align": "center", "color": "#666666", "margin": "md"}
                     ]
                 }
             }
         }
 
-    # สร้างรายการงานในการ์ด (สูงสุด 6 รายการ)
+    # สร้างรายการงานเร่งด่วนในการ์ด
     task_contents = []
-    for idx, item in enumerate(events[:6], 1):
+    for idx, item in enumerate(urgent_events[:5], 1):
         due = item['due_date']
         time_left = due - now
         days_left = time_left.days
         hours_left = int(time_left.seconds // 3600)
 
-        # กำหนดป้ายสีและความเร่งด่วน
         if days_left < 1:
-            badge_color = "#DC3545"  # แดง
-            badge_text = "🚨 ส่งวันนี้/พรุ่งนี้"
-        elif days_left <= 3:
-            badge_color = "#FD7E14"  # ส้ม
-            badge_text = f"⚠️ เหลือ {days_left} วัน"
+            badge_color = "#DC3545"  # แดงเข้ม
+            badge_text = f"🚨 ด่วนมาก! เหลือ {hours_left} ชม."
         else:
-            badge_color = "#20C997"  # เขียวอมฟ้า
-            badge_text = f"📌 เหลือ {days_left} วัน"
+            badge_color = "#FD7E14"  # ส้ม
+            badge_text = f"⚠️ เหลือ {days_left} วัน {hours_left} ชม."
 
         due_fmt = due.strftime("%d/%m/%Y %H:%M น.")
 
@@ -202,7 +186,7 @@ def create_flex_message(events):
                             "contents": [
                                 {"type": "text", "text": badge_text, "color": "#FFFFFF", "size": "xxs", "weight": "bold", "align": "center"}
                             ],
-                            "flex": 2
+                            "flex": 3
                         }
                     ]
                 },
@@ -211,8 +195,7 @@ def create_flex_message(events):
                     "layout": "vertical",
                     "margin": "sm",
                     "contents": [
-                        {"type": "text", "text": f"• กำหนดส่ง: {due_fmt}", "size": "xs", "color": "#666666"},
-                        {"type": "text", "text": f"• คงเหลือ: {days_left} วัน {hours_left} ชั่วโมง", "size": "xs", "color": "#666666"}
+                        {"type": "text", "text": f"• กำหนดส่ง: {due_fmt}", "size": "xs", "color": "#D63384", "weight": "bold"},
                     ]
                 },
                 {"type": "separator", "margin": "md"}
@@ -222,7 +205,107 @@ def create_flex_message(events):
 
     return {
         "type": "flex",
-        "altText": f"🔔 PSU LMS: มีงานค้างทั้งหมด {len(events)} รายการ ({today_str})",
+        "altText": f"🚨 [ด่วน] PSU LMS: งานใกล้หมดเวลา {len(urgent_events)} รายการ ({today_str})",
+        "contents": {
+            "type": "bubble",
+            "header": {
+                "type": "box",
+                "layout": "vertical",
+                "backgroundColor": "#DC3545", # สีแดงเตือนภัย
+                "contents": [
+                    {"type": "text", "text": "PSU LMS URGENT ALERT", "weight": "bold", "color": "#FFC107", "size": "xs"},
+                    {"type": "text", "text": f"🚨 งานใกล้หมดเวลา ({len(urgent_events)} รายการ)", "weight": "bold", "color": "#FFFFFF", "size": "lg", "margin": "xs"},
+                    {"type": "text", "text": f"ข้อมูลประจำวันที่ {today_str}", "color": "#E0E0E0", "size": "xs", "margin": "xs"}
+                ]
+            },
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": task_contents
+            }
+        }
+    }
+
+def create_all_tasks_flex(events, now):
+    """สร้าง Flex Card ใบที่ 2: สรุปรายการงานค้างทั้งหมด"""
+    today_str = now.strftime("%d/%m/%Y")
+
+    if not events:
+        return {
+            "type": "flex",
+            "altText": f"🎉 PSU LMS: ไม่มีงานค้างในระบบ ({today_str})",
+            "contents": {
+                "type": "bubble",
+                "header": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "backgroundColor": "#003366",
+                    "contents": [
+                        {"type": "text", "text": "PSU LMS ALL TASKS", "weight": "bold", "color": "#80BFFF", "size": "xs"},
+                        {"type": "text", "text": "📚 รายงานภาระงานทั้งหมด", "weight": "bold", "color": "#FFFFFF", "size": "lg", "margin": "xs"},
+                        {"type": "text", "text": f"ประจำวันที่ {today_str}", "color": "#E0E0E0", "size": "xs", "margin": "xs"}
+                    ]
+                },
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {"type": "text", "text": "🎉 ไม่พบงานค้าง!", "size": "xl", "weight": "bold", "align": "center", "color": "#28A745"},
+                        {"type": "text", "text": "ขณะนี้ส่งงานครบทุกวิชาแล้วครับ", "size": "sm", "align": "center", "color": "#666666", "margin": "md"}
+                    ]
+                },
+                "footer": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                            "type": "button",
+                            "action": {"type": "uri", "label": "เข้าสู่ระบบ PSU LMS", "uri": "https://lms2.psu.ac.th"},
+                            "style": "primary",
+                            "color": "#003366"
+                        }
+                    ]
+                }
+            }
+        }
+
+    task_contents = []
+    for idx, item in enumerate(events[:6], 1):
+        due = item['due_date']
+        time_left = due - now
+        days_left = time_left.days
+
+        due_fmt = due.strftime("%d/%m/%Y %H:%M น.")
+
+        task_box = {
+            "type": "box",
+            "layout": "vertical",
+            "margin": "lg" if idx > 1 else "none",
+            "contents": [
+                {
+                    "type": "box",
+                    "layout": "horizontal",
+                    "contents": [
+                        {"type": "text", "text": f"{idx}. {item['title']}", "weight": "bold", "size": "sm", "color": "#111111", "flex": 4, "wrap": True},
+                        {"type": "text", "text": f"อีก {days_left} วัน", "size": "xs", "color": "#0055a5", "weight": "bold", "align": "end", "flex": 1}
+                    ]
+                },
+                {
+                    "type": "box",
+                    "layout": "vertical",
+                    "margin": "xs",
+                    "contents": [
+                        {"type": "text", "text": f"• กำหนดส่ง: {due_fmt}", "size": "xs", "color": "#666666"}
+                    ]
+                },
+                {"type": "separator", "margin": "md"}
+            ]
+        }
+        task_contents.append(task_box)
+
+    return {
+        "type": "flex",
+        "altText": f"📚 PSU LMS: สรุปงานค้างทั้งหมด {len(events)} รายการ ({today_str})",
         "contents": {
             "type": "bubble",
             "header": {
@@ -230,8 +313,8 @@ def create_flex_message(events):
                 "layout": "vertical",
                 "backgroundColor": "#003366",
                 "contents": [
-                    {"type": "text", "text": "PSU LMS NOTIFIER", "weight": "bold", "color": "#80BFFF", "size": "xs"},
-                    {"type": "text", "text": f"งานค้างทั้งหมด {len(events)} รายการ", "weight": "bold", "color": "#FFFFFF", "size": "lg", "margin": "xs"},
+                    {"type": "text", "text": "PSU LMS ALL TASKS", "weight": "bold", "color": "#80BFFF", "size": "xs"},
+                    {"type": "text", "text": f"📚 สรุปงานค้างทั้งหมด ({len(events)} รายการ)", "weight": "bold", "color": "#FFFFFF", "size": "lg", "margin": "xs"},
                     {"type": "text", "text": f"ข้อมูลประจำวันที่ {today_str}", "color": "#E0E0E0", "size": "xs", "margin": "xs"}
                 ]
             },
@@ -255,8 +338,8 @@ def create_flex_message(events):
         }
     }
 
-def send_line_flex_message(access_token, to_id, flex_payload):
-    """ส่งข้อความรูปแบบ Flex Message ผ่าน LINE Messaging API"""
+def send_line_flex_messages(access_token, to_id, flex_messages):
+    """ส่งข้อความรูปแบบ Flex Messages หลายใบเข้า LINE พร้อมกันในครั้งเดียว"""
     url = "https://api.line.me/v2/bot/message/push"
     headers = {
         "Content-Type": "application/json",
@@ -264,30 +347,56 @@ def send_line_flex_message(access_token, to_id, flex_payload):
     }
     payload = json.dumps({
         "to": to_id,
-        "messages": [flex_payload]
+        "messages": flex_messages
     }).encode("utf-8")
 
     req = urllib.request.Request(url, data=payload, headers=headers)
     try:
         with urllib.request.urlopen(req) as response:
-            print("✅ ส่ง Flex Message แจ้งเตือนเข้า LINE สำเร็จแล้ว!")
+            print("✅ ส่งแจ้งเตือน (งานเร่งด่วน + งานทั้งหมด) เข้า LINE สำเร็จแล้ว!")
     except Exception as e:
         print(f"❌ เกิดข้อผิดพลาดในการส่ง LINE Messaging API: {e}")
 
+def save_data_json(events):
+    """ส่งออกไฟล์ data.json เพื่อให้หน้าเว็บ index.html แสดงผลข้อมูลตรงกัน 100%"""
+    now = datetime.utcnow() + TZ_OFFSET
+    json_data = {
+        "last_updated": now.strftime("%d/%m/%Y %H:%M:%S"),
+        "total_tasks": len(events),
+        "events": [
+            {
+                "title": item["title"],
+                "due_date": item["due_date_iso"],
+                "description": item["description"]
+            }
+            for item in events
+        ]
+    }
+    with open("data.json", "w", encoding="utf-8") as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=2)
+    print("📁 สร้างไฟล์ data.json สำเร็จแล้ว!")
+
 if __name__ == "__main__":
-    print("🚀 เริ่มต้นระบบแจ้งเตือน PSU LMS (Flex Design Mode)...")
+    print("🚀 เริ่มต้นระบบแจ้งเตือน PSU LMS (โหมดแยกแจ้งเตือนด่วน + สรุปทั้งหมด)...")
     
     clean_url = clean_ical_url(ICAL_URL)
     if not clean_url:
         print("❌ ข้อผิดพลาด: ไม่พบค่า LMS_ICAL_URL")
         exit(1)
 
-    print(f"📥 กำลังดาวน์โหลดข้อมูลงานจาก PSU LMS...")
+    print("📥 กำลังดาวน์โหลดข้อมูลงานจาก PSU LMS...")
     events = fetch_lms_events(clean_url)
-    flex_payload = create_flex_message(events)
+    now_local = datetime.utcnow() + TZ_OFFSET
+
+    # บันทึกไฟล์ data.json สำหรับหน้าเว็บ
+    save_data_json(events)
+
+    # สร้างการ์ด 2 ใบ (1. งานด่วน + 2. งานทั้งหมด)
+    urgent_flex = create_urgent_tasks_flex(events, now_local)
+    all_flex = create_all_tasks_flex(events, now_local)
 
     if LINE_CHANNEL_ACCESS_TOKEN and LINE_USER_ID:
-        print("📤 กำลังส่งการแจ้งเตือนรูปแบบ Flex Card ไปยัง LINE...")
-        send_line_flex_message(LINE_CHANNEL_ACCESS_TOKEN, LINE_USER_ID, flex_payload)
+        print("📤 กำลังส่งการแจ้งเตือน 2 ข้อความแยกกันไปยัง LINE...")
+        send_line_flex_messages(LINE_CHANNEL_ACCESS_TOKEN, LINE_USER_ID, [urgent_flex, all_flex])
     else:
         print("❌ ข้อผิดพลาด: ไม่พบ LINE_CHANNEL_ACCESS_TOKEN หรือ LINE_USER_ID")
