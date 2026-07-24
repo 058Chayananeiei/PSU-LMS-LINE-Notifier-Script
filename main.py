@@ -23,10 +23,7 @@ LINE_USER_ID = os.environ.get(
 TZ_OFFSET = timedelta(hours=7)
 
 # ===== การตั้งค่าระบบแจ้งเตือนงานใกล้หมดเวลา =====
-URGENT_HOURS = 3          # แจ้งเตือนด่วนเมื่อเหลือเวลาน้อยกว่านี้ (ชั่วโมง)
-DIGEST_HOURS = (6, 7, 8)  # ช่วงเวลา (ตามชั่วโมงไทย) ที่ถือว่าเป็น "รอบสรุปประจำวัน"
-STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "notified_state.json")
-STATE_RETENTION_DAYS = 3  # เก็บ record เก่าไว้กี่วันก่อนล้างทิ้ง (กันไฟล์บวม)
+URGENT_HOURS = 3          # แจ้งเตือนด่วนเมื่อเหลือเวลาน้อยกว่านี้ (ชั่วโมง) - เตือนซ้ำได้ทุกรอบจนกว่าจะหมดเวลา
 
 
 def parse_ical_datetime(dt_str):
@@ -157,48 +154,6 @@ def generate_urgent_message(urgent_events, now):
     return msg
 
 
-def event_key(item):
-    """สร้าง key ที่ไม่ซ้ำสำหรับงานแต่ละชิ้น เพื่อใช้เช็คว่าเคยแจ้งเตือนด่วนไปแล้วหรือยัง"""
-    return f"{item['title']}|{item['due_date'].isoformat()}"
-
-
-def load_notified_state(path):
-    """โหลดรายการงานที่เคยส่งแจ้งเตือนด่วนไปแล้ว"""
-    if not os.path.exists(path):
-        return {}
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return data.get("notified", {})
-    except Exception:
-        return {}
-
-
-def save_notified_state(path, notified_dict):
-    """บันทึกรายการงานที่แจ้งเตือนด่วนไปแล้วลงไฟล์"""
-    try:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump({"notified": notified_dict}, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"⚠️ บันทึกสถานะไม่สำเร็จ: {e}")
-
-
-def cleanup_old_state(notified_dict, now):
-    """ล้าง record เก่าที่หมดเวลาไปนานแล้ว กันไฟล์บวมไม่รู้จบ"""
-    cutoff = now - timedelta(days=STATE_RETENTION_DAYS)
-    cleaned = {}
-    for key, notified_at_str in notified_dict.items():
-        try:
-            due_str = key.split('|', 1)[1]
-            due_dt = datetime.fromisoformat(due_str)
-            if due_dt >= cutoff:
-                cleaned[key] = notified_at_str
-        except Exception:
-            # ถ้า parse ไม่ได้ ก็เก็บไว้ก่อนเผื่อพลาด
-            cleaned[key] = notified_at_str
-    return cleaned
-
-
 def send_line_messaging_api(access_token, to_id, message):
     """ส่งข้อความผ่าน LINE Messaging API (Bot)"""
     url = "https://api.line.me/v2/bot/message/push"
@@ -235,42 +190,28 @@ if __name__ == "__main__":
     events = fetch_lms_events(ICAL_URL)
 
     now_local = datetime.utcnow() + TZ_OFFSET
-    is_digest_run = now_local.hour in DIGEST_HOURS
 
-    notified = load_notified_state(STATE_FILE)
-    notified = cleanup_old_state(notified, now_local)
+    messages_to_send = []
 
-    message_to_send = None
+    # 1) สรุปงานทั้งหมด (ส่งทุกรอบ)
+    print("🗒️ กำลังสร้างสรุปงานประจำรอบ...")
+    messages_to_send.append(generate_plain_message(events))
 
-    if is_digest_run:
-        # รอบเช้า -> ส่งสรุปประจำวันตามเดิม
-        print("🗒️ รอบนี้เป็นรอบสรุปประจำวัน")
-        message_to_send = generate_plain_message(events)
+    # 2) เช็คงานที่ใกล้หมดเวลา -> ถ้ามี ส่งแยกเพิ่ม (เตือนซ้ำได้ทุกรอบจนกว่าจะหมดเวลา)
+    print(f"⏱️ กำลังเช็คงานด่วน (เหลือน้อยกว่า {URGENT_HOURS} ชม.)...")
+    urgent_events = [
+        item for item in events
+        if timedelta(0) <= (item['due_date'] - now_local) <= timedelta(hours=URGENT_HOURS)
+    ]
+
+    if urgent_events:
+        messages_to_send.append(generate_urgent_message(urgent_events, now_local))
     else:
-        # รอบอื่น -> เช็คเฉพาะงานที่ใกล้หมดเวลา (และยังไม่เคยแจ้งเตือนด่วนมาก่อน)
-        print(f"⏱️ รอบนี้เป็นรอบเช็คงานด่วน (เหลือน้อยกว่า {URGENT_HOURS} ชม.)")
-        urgent_events = []
-        for item in events:
-            time_left = item['due_date'] - now_local
-            if timedelta(0) <= time_left <= timedelta(hours=URGENT_HOURS):
-                key = event_key(item)
-                if key not in notified:
-                    urgent_events.append(item)
+        print("✅ ไม่มีงานด่วนในตอนนี้")
 
-        if urgent_events:
-            message_to_send = generate_urgent_message(urgent_events, now_local)
-            for item in urgent_events:
-                notified[event_key(item)] = now_local.isoformat()
-        else:
-            print("✅ ไม่มีงานใกล้หมดเวลาในตอนนี้ ไม่ส่งการแจ้งเตือน")
-
-    save_notified_state(STATE_FILE, notified)
-
-    if message_to_send:
-        if LINE_CHANNEL_ACCESS_TOKEN and LINE_USER_ID:
+    if LINE_CHANNEL_ACCESS_TOKEN and LINE_USER_ID:
+        for msg in messages_to_send:
             print("📤 กำลังส่งการแจ้งเตือนไปยัง LINE...")
-            send_line_messaging_api(LINE_CHANNEL_ACCESS_TOKEN, LINE_USER_ID, message_to_send)
-        else:
-            print("❌ ข้อผิดพลาด: ไม่พบ LINE_CHANNEL_ACCESS_TOKEN หรือ LINE_USER_ID")
+            send_line_messaging_api(LINE_CHANNEL_ACCESS_TOKEN, LINE_USER_ID, msg)
     else:
-        print("ℹ️ ไม่มีข้อความที่ต้องส่งในรอบนี้")
+        print("❌ ข้อผิดพลาด: ไม่พบ LINE_CHANNEL_ACCESS_TOKEN หรือ LINE_USER_ID")
