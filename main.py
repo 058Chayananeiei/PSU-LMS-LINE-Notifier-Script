@@ -99,8 +99,9 @@ def fetch_lms_events(ical_url):
 
         description = unescape_ical(desc_match.group(1).strip()) if desc_match else ""
 
-        # กรองเฉพาะงานที่ยังไม่หมดเวลาส่ง (ย้อนหลังไม่เกิน 2 ชม.)
-        if due_date >= now_local - timedelta(hours=2):
+        # กรองเฉพาะงานที่ยังไม่หมดเวลาส่งจริง ๆ (ตัดงานที่ครบกำหนดไปแล้วออกทันที
+        # เพื่อไม่ให้เหลืองานค้างที่แสดงผลเป็น "เหลือ -1 วัน" ทั้งในเว็บและ LINE)
+        if due_date >= now_local:
             events.append({
                 'title': title,
                 'due_date': due_date,
