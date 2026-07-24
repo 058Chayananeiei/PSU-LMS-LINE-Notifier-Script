@@ -285,11 +285,17 @@
 
     <footer class="bg-white border-t border-slate-200 mt-auto py-4">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-            PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติเวลา 07:00 น., 12:00 น., 18:00 น.
+            PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติทุกๆ 2 ชั่วโมง
         </div>
     </footer>
 
     <script>
+        // ==================== CONFIGURATION ====================
+        // ใส่ GitHub Personal Access Token (PAT) และชื่อ Repository ของคุณตรงนี้
+        const GITHUB_PAT = 'ghp_xxxxxxxxxxxxxxxxxxxx'; // ใส่ Token ghp_...
+        const REPO_OWNER = '058Chayananeiei';
+        const REPO_NAME = 'PSU-LMS-LINE-Notifier-Script';
+
         let fetchedEvents = [];
         let currentDisplayDate = new Date();
         let selectedFilterDateStr = null;
@@ -313,22 +319,63 @@
         // สลับสถานะการเสร็จสิ้นของงาน (Toggle Completed State)
         function toggleTaskStatus(taskId) {
             let completedIds = getCompletedTaskIds();
-            if (completedIds.includes(taskId)) {
-                completedIds = completedIds.filter(id => id !== taskId);
-            } else {
+            const isNowCompleted = !completedIds.includes(taskId);
+
+            if (isNowCompleted) {
                 completedIds.push(taskId);
+            } else {
+                completedIds = completedIds.filter(id => id !== taskId);
             }
             saveCompletedTaskIds(completedIds);
             
-            // อัปเดตสถานะในตัวแปร fetchedEvents
+            let updatedTaskTitle = "";
             fetchedEvents = fetchedEvents.map(item => {
                 if (item.id === taskId) {
-                    return { ...item, completed: completedIds.includes(taskId) };
+                    updatedTaskTitle = item.title;
+                    return { ...item, completed: isNowCompleted };
                 }
                 return item;
             });
 
             renderDashboard();
+
+            // 🔔 ถ้ากดติ๊กเปลี่ยนสถานะเป็น "ทำเสร็จแล้ว" ให้ส่งแจ้งเตือนเข้า LINE ทันที
+            if (isNowCompleted && updatedTaskTitle) {
+                sendLineTaskDoneNotification(updatedTaskTitle);
+            }
+        }
+
+        // ฟังก์ชันส่งสัญญาณเข้า GitHub Actions เพื่อยิง LINE Notify
+        async function sendLineTaskDoneNotification(taskTitle) {
+            if (!GITHUB_PAT || GITHUB_PAT.startsWith('ghp_xxxx')) {
+                console.warn("⚠️ ยังไม่ได้ใส่ GITHUB_PAT จริงในไฟล์ index.html (ข้ามการส่งแจ้งเตือนเข้า LINE)");
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': `Bearer ${GITHUB_PAT}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        event_type: 'task_completed',
+                        client_payload: {
+                            task_title: taskTitle
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    console.log('✅ ส่งสัญญาณแจ้งเตือนทำเสร็จแล้วเข้า GitHub Actions สำเร็จ!');
+                } else {
+                    console.error('❌ ไม่สามารถส่งสัญญาณไปยัง GitHub Actions ได้:', response.statusText);
+                }
+            } catch (error) {
+                console.error('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ GitHub API:', error);
+            }
         }
 
         window.onload = function() {
@@ -456,7 +503,6 @@
             let normalCount = 0;
             let completedCount = 0;
 
-            // คํานวณเฉพาะงานที่ยังทำไม่เสร็จ
             const pendingEvents = fetchedEvents.filter(e => !e.completed);
 
             pendingEvents.forEach(item => {
@@ -541,7 +587,6 @@
                     return eDate.getFullYear() === year && eDate.getMonth() === month && eDate.getDate() === day;
                 });
 
-                // แสดง badge จำนวนงานเฉพาะงานที่ยังไม่เสร็จ
                 const pendingDayEvents = dayEvents.filter(e => !e.completed);
 
                 let borderStyle = isSelected ? "ring-2 ring-psu-blue bg-blue-50/80" : "bg-white";
@@ -629,7 +674,6 @@
 
             let displayList = fetchedEvents;
 
-            // กรองตามวันที่เลือกบนปฏิทิน
             if (selectedFilterDateStr) {
                 const [y, m, d] = selectedFilterDateStr.split('-');
                 displayList = displayList.filter(e => {
@@ -638,7 +682,6 @@
                 });
             }
 
-            // กรองตามสถานะทำเสร็จ / ยังไม่เสร็จ
             if (currentStatusFilter === 'pending') {
                 displayList = displayList.filter(e => !e.completed);
             } else if (currentStatusFilter === 'completed') {
@@ -691,7 +734,6 @@
                 html += `
                     <div class="p-3.5 ${cardStyle} rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-start gap-3 flex-grow">
-                            <!-- Checkbox ปุ่มทำเสร็จแล้ว -->
                             <button onclick="toggleTaskStatus('${item.id}')" title="เปลี่ยนสถานะ" class="mt-0.5 text-lg transition transform active:scale-95 focus:outline-none">
                                 ${item.completed 
                                     ? '<i class="fa-solid fa-circle-check text-emerald-500 hover:text-emerald-600"></i>' 
@@ -746,11 +788,8 @@
             document.getElementById('flex-all-date').innerText = `ประจำวันที่ ${todayStr}`;
 
             const now = new Date();
-
-            // แสดงเฉพาะงานที่ยังทำไม่เสร็จใน LINE Flex
             const pendingEvents = fetchedEvents.filter(item => !item.completed);
 
-            // 1. Render Urgent Flex Card
             const urgentEvents = pendingEvents.filter(item => {
                 const diffMs = item.due_date - now;
                 return Math.floor(diffMs / (1000 * 60 * 60 * 24)) <= 3;
@@ -795,7 +834,6 @@
                 urgentContainer.innerHTML = html;
             }
 
-            // 2. Render All Tasks Flex Card
             const allContainer = document.getElementById('flex-all-body');
             document.getElementById('flex-all-title').innerText = `📚 สรุปงานค้างทั้งหมด (${pendingEvents.length} รายการ)`;
 
