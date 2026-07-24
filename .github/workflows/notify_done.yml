@@ -1,0 +1,18 @@
+name: Notify Task Done
+
+on:
+  repository_dispatch:
+    types: [task_completed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send LINE Notification
+        run: |
+          TASK_NAME="${{ github.event.client_payload.task_title }}"
+          MESSAGE=$'\n✅ อัปเดตสถานะงาน!\nทำเสร็จเรียบร้อยแล้ว: "'"$TASK_NAME"$'"\n🎉 เก่งมากครับ! งานค้างลดลงอีก 1 งานแล้ว'
+          
+          curl -X POST https://notify-api.line.me/api/notify \
+          -H "Authorization: Bearer ${{ secrets.LINE_NOTIFY_TOKEN }}" \
+          -F "message=$MESSAGE"
