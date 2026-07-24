@@ -1,42 +1,30 @@
-name: PSU LMS Daily LINE Notifier
+name: PSU LMS LINE Notifier
+
 on:
   schedule:
-    # รันวันละ 4 รอบ เวลาไทย: 07:00, 12:00, 18:00, 23:00
-    # GitHub Actions ใช้เวลา UTC เสมอ (ไทย = UTC+7) จึงตั้งเป็น 00:00, 05:00, 11:00, 16:00 UTC
-    - cron: '0 0,5,11,16 * * *'
-  workflow_dispatch: # ปุ่มกดสั่งรันด้วยตัวเองเพื่อทดสอบ
-
-# ให้สิทธิ์ job นี้ push กลับเข้า repo ได้ (จำเป็นสำหรับ step commit data.json)
-permissions:
-  contents: write
+    # รันทุกๆ 2 ชั่วโมง (นาทีที่ 0 ของทุกชั่วโมงคู่ตามเวลา UTC)
+    - cron: '0 */2 * * *'
+  
+  # ปุ่มกดรันด้วยตัวเองผ่านหน้าเว็บ GitHub
+  workflow_dispatch:
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v3
+      
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-
-      - name: Run LINE Notifier
-        env:
-          LMS_ICAL_URL: ${{ secrets.LMS_ICAL_URL }}
-          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
-          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
-        run: python main.py
-
-      - name: Commit and push data.json
+          
+      - name: Install dependencies
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.json
-          if git diff --cached --quiet; then
-            echo "ℹ️ ไม่มีการเปลี่ยนแปลงข้อมูล ไม่ต้อง commit"
-          else
-            git commit -m "🤖 อัปเดต data.json อัตโนมัติ [skip ci]"
-            git push
-          fi
+          pip install requests
+          
+      - name: Run Notifier Script
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          # หรือ LINE_NOTIFY_TOKEN: ${{ secrets.LINE_NOTIFY_TOKEN }}
+        run: python main.py
