@@ -14,7 +14,6 @@ jobs:
           USER_ID: ${{ secrets.LINE_USER_ID }}
           TASK_NAME: ${{ github.event.client_payload.task_title }}
         run: |
-          # สร้าง Flex Message Payload
           PAYLOAD=$(jq -n \
             --arg to "$USER_ID" \
             --arg title "$TASK_NAME" \
@@ -38,8 +37,7 @@ jobs:
                           text: "TASK COMPLETED!",
                           color: "#FFFFFF",
                           size: "xs",
-                          weight: "bold",
-                          space: "xs"
+                          weight: "bold"
                         },
                         {
                           type: "text",
@@ -89,26 +87,6 @@ jobs:
                               align: "end"
                             }
                           ]
-                        },
-                        {
-                          type: "box",
-                          layout: "horizontal",
-                          margin: "md",
-                          contents: [
-                            {
-                              type: "text",
-                              text: "คำแนะนำ",
-                              size: "xs",
-                              color: "#9CA3AF"
-                            },
-                            {
-                              type: "text",
-                              text: "เก่งมาก! งานค้างลดลงแล้ว 👏",
-                              size: "xs",
-                              color: "#4B5563",
-                              align: "end"
-                            }
-                          ]
                         }
                       ]
                     },
@@ -135,7 +113,6 @@ jobs:
               ]
             }')
 
-          # ยิง API
           curl -X POST "https://api.line.me/v2/bot/message/push" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $CHANNEL_ACCESS_TOKEN" \
