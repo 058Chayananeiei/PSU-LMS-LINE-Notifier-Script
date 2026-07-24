@@ -287,6 +287,14 @@
             loadCalendarData();
         };
 
+        // ตัดงานที่ครบกำหนดส่งไปแล้วออกจากระบบ ป้องกันไม่ให้แสดงผลเป็น "เหลือ -1 วัน"
+        // (เผื่อเวลา 2 ชม.เท่ากับฝั่ง Python เผื่อกรณีปิดรับงานคาบเกี่ยวเวลาส่งพอดี)
+        function filterExpiredEvents(events) {
+            const now = new Date();
+            const graceMs = 2 * 60 * 60 * 1000; // 2 ชั่วโมง
+            return events.filter(e => e.due_date && (e.due_date.getTime() >= (now.getTime() - graceMs)));
+        }
+
         async function loadCalendarData() {
             const btnReload = document.getElementById('btn-reload');
             btnReload.disabled = true;
@@ -299,11 +307,14 @@
                     const data = await response.json();
                     const rawList = data.tasks || data.events || [];
                     
-                    fetchedEvents = rawList.map(e => ({
+                    const parsedList = rawList.map(e => ({
                         title: e.title || e.summary,
                         due_date: new Date((e.due || e.due_date).replace(/-/g, '/')),
                         description: e.description || ""
                     }));
+
+                    // ลบงานที่หมดเวลาส่งไปแล้วออกจากระบบ (ไม่ให้ขึ้น -1 วัน)
+                    fetchedEvents = filterExpiredEvents(parsedList);
 
                     document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
                 } else {
@@ -328,7 +339,7 @@
                 const res = await fetch(proxyUrl);
                 if (res.ok) {
                     const text = await res.text();
-                    fetchedEvents = parseICal(text);
+                    fetchedEvents = filterExpiredEvents(parseICal(text));
                     document.getElementById('last-updated-text').innerText = `อัปเดตสดจาก PSU LMS ผ่าน Proxy (ตรง 100%)`;
                 } else {
                     document.getElementById('last-updated-text').innerText = `กรุณาเปิดสิทธิ์ GitHub Actions เพื่อสร้าง data.json`;
