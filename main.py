@@ -4,8 +4,12 @@ import urllib.parse
 from datetime import datetime, timedelta
 import re
 import json
+import hashlib
 
 # ==================== CONFIGURATION ====================
+# repo แบบ "owner/name" — GitHub Actions ใส่ตัวแปรนี้ให้อัตโนมัติทุกครั้งที่รัน
+GITHUB_REPO = os.environ.get("GITHUB_REPOSITORY", "")
+COMPLETED_TASKS_FILE = "completed_tasks.json"
 ICAL_URL = os.environ.get(
     "LMS_ICAL_URL", 
     "https://lms.psu.ac.th/calendar/export_execute.php?userid=56828&authtoken=3463a3bce6ca9586ecb1a5abf0d4757ebf314808&preset_what=all&preset_time=recentupcoming"
@@ -31,6 +35,33 @@ def clean_ical_url(url):
     if match:
         return match.group(0)
     return url
+
+def make_task_id(title):
+    """สร้าง id คงที่ต่องาน 1 ชิ้น จากชื่องาน (ใช้ผูกกับปุ่ม 'ทำแล้ว')"""
+    return hashlib.md5(title.strip().encode("utf-8")).hexdigest()[:8]
+
+def load_completed_tasks():
+    """โหลดรายการ task_id ที่ถูกกดว่า 'ทำแล้ว' (ถ้ายังไม่มีไฟล์ ให้ถือว่าว่าง)"""
+    if not os.path.exists(COMPLETED_TASKS_FILE):
+        return set()
+    try:
+        with open(COMPLETED_TASKS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return set(data.get("completed", []))
+    except Exception:
+        return set()
+
+def make_done_issue_url(task_id, title):
+    """ลิงก์เปิด GitHub Issue ใหม่ เพื่อสั่ง mark งานนี้ว่า 'ทำแล้ว'"""
+    if not GITHUB_REPO:
+        return "https://github.com"
+    short_title = title[:60]
+    issue_title = f"done:{task_id} {short_title}"
+    params = urllib.parse.urlencode({
+        "title": issue_title,
+        "labels": "task-done"
+    })
+    return f"https://github.com/{GITHUB_REPO}/issues/new?{params}"
 
 def unfold_ical(text):
     """ปลดการตัดบรรทัด (Line Folding) ตามมาตรฐาน RFC 5545"""
@@ -106,7 +137,8 @@ def fetch_lms_events(ical_url):
                 'title': title,
                 'due_date': due_date,
                 'due_date_iso': due_date.isoformat(),
-                'description': description
+                'description': description,
+                'task_id': make_task_id(title)
             })
 
     events.sort(key=lambda x: x['due_date'])
@@ -204,6 +236,21 @@ def create_urgent_tasks_flex(events, now):
         }
         task_contents.append(task_box)
 
+    # ปุ่ม "✅ ทำแล้ว" ต่องาน (สูงสุด 5 รายการ ตามที่การ์ดแสดง)
+    done_buttons = []
+    for idx, item in enumerate(urgent_events[:5], 1):
+        short_title = item['title'][:22] + ("…" if len(item['title']) > 22 else "")
+        done_buttons.append({
+            "type": "button",
+            "style": "secondary",
+            "height": "sm",
+            "action": {
+                "type": "uri",
+                "label": f"✅ {idx}. {short_title}",
+                "uri": make_done_issue_url(item['task_id'], item['title'])
+            }
+        })
+
     return {
         "type": "flex",
         "altText": f"🚨 [ด่วน] PSU LMS: งานใกล้หมดเวลา {len(urgent_events)} รายการ ({today_str})",
@@ -223,6 +270,12 @@ def create_urgent_tasks_flex(events, now):
                 "type": "box",
                 "layout": "vertical",
                 "contents": task_contents
+            },
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "spacing": "sm",
+                "contents": done_buttons
             }
         }
     }
@@ -368,7 +421,8 @@ def save_data_json(events):
             {
                 "title": item["title"],
                 "due_date": item["due_date_iso"],
-                "description": item["description"]
+                "description": item["description"],
+                "task_id": item["task_id"]
             }
             for item in events
         ]
@@ -388,6 +442,13 @@ if __name__ == "__main__":
     print("📥 กำลังดาวน์โหลดข้อมูลงานจาก PSU LMS...")
     events = fetch_lms_events(clean_url)
     now_local = datetime.utcnow() + TZ_OFFSET
+
+    # ตัดงานที่กด "✅ ทำแล้ว" ออกจากการแจ้งเตือน
+    completed_ids = load_completed_tasks()
+    if completed_ids:
+        before = len(events)
+        events = [e for e in events if e['task_id'] not in completed_ids]
+        print(f"✅ ตัดงานที่ทำแล้วออก {before - len(events)} รายการ (เหลือ {len(events)} รายการ)")
 
     # บันทึกไฟล์ data.json สำหรับหน้าเว็บ
     save_data_json(events)
