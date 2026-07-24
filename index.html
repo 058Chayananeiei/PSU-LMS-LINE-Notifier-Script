@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PSU LMS Assignment Calendar & LINE Notifier</title>
-    <!-- Tailwind CSS (Compiled Standalone - No Warning) -->
+    <!-- Tailwind CSS (Compiled Standalone - ไม่ขึ้น Warning ใน Console) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -53,11 +53,11 @@
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Navbar Section -->
+    <!-- Header Navigation Bar -->
     <nav class="bg-psu-gradient text-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <!-- Brand & Logo -->
+                <!-- Brand & PSU Logo -->
                 <div class="flex items-center space-x-4">
                     <div class="bg-white p-2 rounded-2xl shadow-sm flex items-center justify-center">
                         <img src="https://i.imgur.com/8Q9Z1Qp.png" alt="PSU Logo" class="h-9 w-auto object-contain" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/PSU_Logo.png/600px-PSU_Logo.png';">
@@ -71,7 +71,7 @@
                     </div>
                 </div>
 
-                <!-- Right Action Buttons -->
+                <!-- Header Actions -->
                 <div class="flex items-center space-x-3">
                     <button onclick="resetGithubPat()" title="ตั้งค่า GitHub Token ใหม่" class="px-3 py-1.5 text-xs font-medium rounded-xl bg-white/10 hover:bg-white/20 text-white transition border border-white/15 flex items-center gap-1.5 shadow-sm">
                         <i class="fa-solid fa-key text-amber-300"></i>
@@ -111,7 +111,7 @@
             <!-- Left Column: Stats & Calendar -->
             <div class="lg:col-span-8 flex flex-col gap-8">
                 
-                <!-- Stats Overview -->
+                <!-- Stats Grid -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/70 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">งานค้างทั้งหมด</span>
@@ -222,7 +222,7 @@
 
             </div>
 
-            <!-- Right Column: LINE Flex Message Live Preview -->
+            <!-- Right Column: LINE Flex Live Preview -->
             <div class="lg:col-span-4 flex flex-col gap-8">
 
                 <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-xl border border-slate-800">
