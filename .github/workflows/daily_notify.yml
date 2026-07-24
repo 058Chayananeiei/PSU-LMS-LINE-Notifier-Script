@@ -1,13 +1,10 @@
 name: PSU LMS Daily LINE Notifier
 on:
   schedule:
-    # รันวันละ 4 รอบ เวลาไทย: 07:00 (สรุปประจำวัน), 12:00, 18:00, 23:00 (เช็คงานด่วน)
+    # รันวันละ 4 รอบ เวลาไทย: 07:00, 12:00, 18:00, 23:00
     # GitHub Actions ใช้เวลา UTC เสมอ (ไทย = UTC+7) จึงตั้งเป็น 00:00, 05:00, 11:00, 16:00 UTC
     - cron: '0 0,5,11,16 * * *'
   workflow_dispatch: # ปุ่มกดสั่งรันด้วยตัวเองเพื่อทดสอบ
-
-permissions:
-  contents: write   # ต้องมีสิทธิ์ write เพื่อให้ commit ไฟล์สถานะ (notified_state.json) กลับเข้า repo ได้
 
 jobs:
   notify:
@@ -27,12 +24,3 @@ jobs:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
         run: python main.py
-
-      - name: Save notified-state file back to repo
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add notified_state.json
-          git diff --cached --quiet || git commit -m "Update notified state [skip ci]"
-          git pull --rebase
-          git push
