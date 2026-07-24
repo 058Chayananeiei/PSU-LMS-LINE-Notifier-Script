@@ -110,7 +110,7 @@
             <!-- Left Column: Stats & Calendar -->
             <div class="lg:col-span-8 flex flex-col gap-6">
                 
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">งานค้างทั้งหมด</span>
                         <div class="flex items-baseline justify-between mt-2">
@@ -128,8 +128,15 @@
                     <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">เหลือ > 3 วัน</span>
                         <div class="flex items-baseline justify-between mt-2">
-                            <span id="stat-normal" class="text-2xl font-bold text-emerald-600">0</span>
-                            <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600 text-xs"><i class="fa-solid fa-clock"></i></span>
+                            <span id="stat-normal" class="text-2xl font-bold text-amber-600">0</span>
+                            <span class="p-2 rounded-lg bg-amber-50 text-amber-600 text-xs"><i class="fa-solid fa-clock"></i></span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+                        <span class="text-xs text-slate-500 font-medium">ทำเสร็จแล้ว</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="stat-completed" class="text-2xl font-bold text-emerald-600">0</span>
+                            <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600 text-xs"><i class="fa-solid fa-circle-check"></i></span>
                         </div>
                     </div>
                 </div>
@@ -194,6 +201,11 @@
                     <div id="view-list-container" class="hidden">
                         <div class="flex items-center justify-between mb-3 text-xs text-slate-500">
                             <span id="list-title-text">รายการภาระงานทั้งหมด</span>
+                            <div class="flex gap-2">
+                                <button onclick="setListFilter('all')" id="btn-filter-all" class="px-2.5 py-1 rounded-lg bg-psu-blue text-white font-medium text-[11px]">ทั้งหมด</button>
+                                <button onclick="setListFilter('pending')" id="btn-filter-pending" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium text-[11px]">ยังไม่เสร็จ</button>
+                                <button onclick="setListFilter('completed')" id="btn-filter-completed" class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium text-[11px]">ทำเสร็จแล้ว</button>
+                            </div>
                         </div>
 
                         <div id="tasks-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
@@ -214,7 +226,7 @@
                             <i class="fa-brands fa-line text-2xl text-emerald-400"></i>
                             <div>
                                 <h3 class="font-semibold text-sm">LINE Flex Preview</h3>
-                                <p class="text-xs text-slate-400">ตัวอย่างข้อความที่ส่งเข้า LINE</p>
+                                <p class="text-xs text-slate-400">ตัวอย่างข้อความที่จะแจ้งเตือนเข้า LINE</p>
                             </div>
                         </div>
                         <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full font-medium">Live Sync</span>
@@ -282,13 +294,47 @@
         let currentDisplayDate = new Date();
         let selectedFilterDateStr = null;
         let activeFlexTab = 'urgent';
+        let currentStatusFilter = 'all'; // all, pending, completed
+
+        // โหลด ID งานที่ทำเสร็จแล้วจาก localStorage
+        function getCompletedTaskIds() {
+            try {
+                return JSON.parse(localStorage.getItem('psu_lms_completed_tasks')) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        // บันทึก ID งานที่เสร็จแล้วลง localStorage
+        function saveCompletedTaskIds(completedIds) {
+            localStorage.setItem('psu_lms_completed_tasks', JSON.stringify(completedIds));
+        }
+
+        // สลับสถานะการเสร็จสิ้นของงาน (Toggle Completed State)
+        function toggleTaskStatus(taskId) {
+            let completedIds = getCompletedTaskIds();
+            if (completedIds.includes(taskId)) {
+                completedIds = completedIds.filter(id => id !== taskId);
+            } else {
+                completedIds.push(taskId);
+            }
+            saveCompletedTaskIds(completedIds);
+            
+            // อัปเดตสถานะในตัวแปร fetchedEvents
+            fetchedEvents = fetchedEvents.map(item => {
+                if (item.id === taskId) {
+                    return { ...item, completed: completedIds.includes(taskId) };
+                }
+                return item;
+            });
+
+            renderDashboard();
+        }
 
         window.onload = function() {
             loadCalendarData();
         };
 
-        // ตัดงานที่ครบกำหนดส่งไปแล้วออกจากระบบ ป้องกันไม่ให้แสดงผลเป็น "เหลือ -1 วัน"
-        // (เผื่อเวลา 2 ชม.เท่ากับฝั่ง Python เผื่อกรณีปิดรับงานคาบเกี่ยวเวลาส่งพอดี)
         function filterExpiredEvents(events) {
             const now = new Date();
             const graceMs = 2 * 60 * 60 * 1000; // 2 ชั่วโมง
@@ -300,22 +346,26 @@
             btnReload.disabled = true;
             btnReload.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังโหลด...`;
 
+            const completedIds = getCompletedTaskIds();
+
             try {
-                // 1. ลองดึงจาก data.json
                 const response = await fetch('./data.json?t=' + new Date().getTime());
                 if (response.ok) {
                     const data = await response.json();
                     const rawList = data.tasks || data.events || [];
                     
-                    const parsedList = rawList.map(e => ({
-                        title: e.title || e.summary,
-                        due_date: new Date(e.due || e.due_date),
-                        description: e.description || ""
-                    }));
+                    const parsedList = rawList.map((e, index) => {
+                        const taskId = e.id || e.summary || e.title || `task-${index}`;
+                        return {
+                            id: taskId,
+                            title: e.title || e.summary,
+                            due_date: new Date(e.due || e.due_date),
+                            description: e.description || "",
+                            completed: completedIds.includes(taskId)
+                        };
+                    });
 
-                    // ลบงานที่หมดเวลาส่งไปแล้วออกจากระบบ (ไม่ให้ขึ้น -1 วัน)
                     fetchedEvents = filterExpiredEvents(parsedList);
-
                     document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
                 } else {
                     throw new Error("data.json not found");
@@ -354,6 +404,7 @@
             const events = [];
             const unfolded = icalText.replace(/\r?\n[ \t]/g, '');
             const blocks = unfolded.split('BEGIN:VEVENT');
+            const completedIds = getCompletedTaskIds();
 
             for (let i = 1; i < blocks.length; i++) {
                 const block = blocks[i];
@@ -385,7 +436,13 @@
                         dt = new Date(y, m - 1, d);
                     }
                     if (dt && !isNaN(dt.getTime())) {
-                        events.push({ title: summary, due_date: dt });
+                        const taskId = `${summary}-${dt.getTime()}`;
+                        events.push({ 
+                            id: taskId,
+                            title: summary, 
+                            due_date: dt,
+                            completed: completedIds.includes(taskId)
+                        });
                     }
                 }
             }
@@ -397,8 +454,12 @@
             const now = new Date();
             let urgentCount = 0;
             let normalCount = 0;
+            let completedCount = 0;
 
-            fetchedEvents.forEach(item => {
+            // คํานวณเฉพาะงานที่ยังทำไม่เสร็จ
+            const pendingEvents = fetchedEvents.filter(e => !e.completed);
+
+            pendingEvents.forEach(item => {
                 const diffMs = item.due_date - now;
                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
                 if (diffDays <= 3) {
@@ -408,9 +469,12 @@
                 }
             });
 
-            document.getElementById('stat-total').innerText = fetchedEvents.length;
+            completedCount = fetchedEvents.filter(e => e.completed).length;
+
+            document.getElementById('stat-total').innerText = pendingEvents.length;
             document.getElementById('stat-urgent').innerText = urgentCount;
             document.getElementById('stat-normal').innerText = normalCount;
+            document.getElementById('stat-completed').innerText = completedCount;
 
             renderCalendarGrid();
             renderTaskList();
@@ -477,6 +541,9 @@
                     return eDate.getFullYear() === year && eDate.getMonth() === month && eDate.getDate() === day;
                 });
 
+                // แสดง badge จำนวนงานเฉพาะงานที่ยังไม่เสร็จ
+                const pendingDayEvents = dayEvents.filter(e => !e.completed);
+
                 let borderStyle = isSelected ? "ring-2 ring-psu-blue bg-blue-50/80" : "bg-white";
                 let todayBadge = isToday ? "bg-psu-blue text-white font-bold rounded-full w-5 h-5 flex items-center justify-center" : "text-slate-700 font-semibold";
 
@@ -484,20 +551,28 @@
                     <div onclick="selectDateFilter('${dateKey}')" class="${borderStyle} p-1.5 calendar-day-cell rounded-xl border border-slate-200/80 cursor-pointer flex flex-col justify-between hover:border-psu-blue shadow-2xs relative">
                         <div class="flex items-center justify-between text-xs">
                             <span class="${todayBadge}">${day}</span>
-                            ${dayEvents.length > 0 ? `<span class="bg-psu-blue text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">${dayEvents.length}</span>` : ''}
+                            ${pendingDayEvents.length > 0 ? `<span class="bg-psu-blue text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">${pendingDayEvents.length}</span>` : ''}
                         </div>
                         
                         <div class="mt-1 space-y-1 max-h-[45px] overflow-hidden">
                             ${dayEvents.map(e => {
                                 const diffMs = e.due_date - today;
                                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                                
                                 let colorClass = "bg-emerald-500";
-                                if (diffDays < 1) colorClass = "bg-rose-500 animate-pulse";
-                                else if (diffDays <= 3) colorClass = "bg-amber-500";
+                                if (e.completed) {
+                                    colorClass = "bg-slate-300 opacity-60";
+                                } else if (diffDays < 1) {
+                                    colorClass = "bg-rose-500 animate-pulse";
+                                } else if (diffDays <= 3) {
+                                    colorClass = "bg-amber-500";
+                                }
+
+                                const titleText = e.completed ? `<del class="text-slate-400">${e.title}</del>` : e.title;
 
                                 return `
                                     <div class="text-[10px] bg-slate-100 p-1 rounded-lg border-l-2 ${colorClass.replace('bg-', 'border-')} truncate text-slate-700 font-medium leading-none">
-                                        ${e.title}
+                                        ${titleText}
                                     </div>
                                 `;
                             }).join('')}
@@ -531,26 +606,51 @@
             renderTaskList();
         }
 
+        function setListFilter(status) {
+            currentStatusFilter = status;
+            
+            const btnAll = document.getElementById('btn-filter-all');
+            const btnPending = document.getElementById('btn-filter-pending');
+            const btnCompleted = document.getElementById('btn-filter-completed');
+
+            const activeClass = "px-2.5 py-1 rounded-lg bg-psu-blue text-white font-medium text-[11px]";
+            const inactiveClass = "px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium text-[11px]";
+
+            btnAll.className = status === 'all' ? activeClass : inactiveClass;
+            btnPending.className = status === 'pending' ? activeClass : inactiveClass;
+            btnCompleted.className = status === 'completed' ? activeClass : inactiveClass;
+
+            renderTaskList();
+        }
+
         function renderTaskList() {
             const container = document.getElementById('tasks-container');
             const now = new Date();
 
             let displayList = fetchedEvents;
 
+            // กรองตามวันที่เลือกบนปฏิทิน
             if (selectedFilterDateStr) {
                 const [y, m, d] = selectedFilterDateStr.split('-');
-                displayList = fetchedEvents.filter(e => {
+                displayList = displayList.filter(e => {
                     const ed = e.due_date;
                     return ed.getFullYear() === parseInt(y) && ed.getMonth() === (parseInt(m) - 1) && ed.getDate() === parseInt(d);
                 });
+            }
+
+            // กรองตามสถานะทำเสร็จ / ยังไม่เสร็จ
+            if (currentStatusFilter === 'pending') {
+                displayList = displayList.filter(e => !e.completed);
+            } else if (currentStatusFilter === 'completed') {
+                displayList = displayList.filter(e => e.completed);
             }
 
             if (!displayList || displayList.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                         <i class="fa-solid fa-circle-check text-3xl text-emerald-500 mb-2"></i>
-                        <h3 class="font-bold text-slate-700 text-sm">ไม่พบภาระงานค้างส่ง</h3>
-                        <p class="text-xs text-slate-500 mt-1">ส่งงานครบทุกวิชาเรียบร้อยแล้วครับ</p>
+                        <h3 class="font-bold text-slate-700 text-sm">ไม่พบรายการภาระงาน</h3>
+                        <p class="text-xs text-slate-500 mt-1">ไม่มีงานค้างอยู่ในเงื่อนไขนี้ครับ</p>
                     </div>
                 `;
                 return;
@@ -565,7 +665,10 @@
                 let badgeBg = "bg-emerald-100 text-emerald-700 border-emerald-200";
                 let badgeText = `📌 เหลือ ${diffDays} วัน`;
 
-                if (diffDays < 1) {
+                if (item.completed) {
+                    badgeBg = "bg-slate-100 text-slate-500 border-slate-200";
+                    badgeText = "✓ ทำเสร็จแล้ว";
+                } else if (diffDays < 1) {
                     badgeBg = "bg-rose-100 text-rose-700 border-rose-200 animate-pulse";
                     badgeText = "🚨 ด่วนมาก!";
                 } else if (diffDays <= 3) {
@@ -577,18 +680,34 @@
                     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
                 }) + ' น.';
 
+                const cardStyle = item.completed 
+                    ? "bg-slate-50/70 border-slate-200 opacity-75" 
+                    : "bg-slate-50 hover:bg-blue-50/40 border-slate-200";
+
+                const titleStyle = item.completed 
+                    ? "line-through text-slate-400 font-normal" 
+                    : "text-slate-800 font-bold";
+
                 html += `
-                    <div class="p-3.5 bg-slate-50 hover:bg-blue-50/40 rounded-xl border border-slate-200 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex-grow">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="font-bold text-slate-400 text-xs">#${index + 1}</span>
-                                <h4 class="font-bold text-slate-800 text-sm">${item.title}</h4>
-                            </div>
-                            <div class="text-xs text-slate-500 space-y-0.5">
-                                <p><i class="fa-regular fa-calendar-check text-slate-400 w-4"></i> กำหนดส่ง: <span class="font-medium text-slate-700">${dateFormatted}</span></p>
+                    <div class="p-3.5 ${cardStyle} rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-start gap-3 flex-grow">
+                            <!-- Checkbox ปุ่มทำเสร็จแล้ว -->
+                            <button onclick="toggleTaskStatus('${item.id}')" title="เปลี่ยนสถานะ" class="mt-0.5 text-lg transition transform active:scale-95 focus:outline-none">
+                                ${item.completed 
+                                    ? '<i class="fa-solid fa-circle-check text-emerald-500 hover:text-emerald-600"></i>' 
+                                    : '<i class="fa-regular fa-circle text-slate-300 hover:text-emerald-500"></i>'}
+                            </button>
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-bold text-slate-400 text-xs">#${index + 1}</span>
+                                    <h4 class="${titleStyle} text-sm">${item.title}</h4>
+                                </div>
+                                <div class="text-xs text-slate-500 space-y-0.5">
+                                    <p><i class="fa-regular fa-calendar-check text-slate-400 w-4"></i> กำหนดส่ง: <span class="font-medium text-slate-700">${dateFormatted}</span></p>
+                                </div>
                             </div>
                         </div>
-                        <div>
+                        <div class="flex items-center justify-between sm:justify-end gap-2 pl-7 sm:pl-0">
                             <span class="inline-block px-3 py-1 rounded-lg text-xs font-semibold border ${badgeBg} whitespace-nowrap">
                                 ${badgeText}
                             </span>
@@ -628,8 +747,11 @@
 
             const now = new Date();
 
+            // แสดงเฉพาะงานที่ยังทำไม่เสร็จใน LINE Flex
+            const pendingEvents = fetchedEvents.filter(item => !item.completed);
+
             // 1. Render Urgent Flex Card
-            const urgentEvents = fetchedEvents.filter(item => {
+            const urgentEvents = pendingEvents.filter(item => {
                 const diffMs = item.due_date - now;
                 return Math.floor(diffMs / (1000 * 60 * 60 * 24)) <= 3;
             });
@@ -675,9 +797,9 @@
 
             // 2. Render All Tasks Flex Card
             const allContainer = document.getElementById('flex-all-body');
-            document.getElementById('flex-all-title').innerText = `📚 สรุปงานค้างทั้งหมด (${fetchedEvents.length} รายการ)`;
+            document.getElementById('flex-all-title').innerText = `📚 สรุปงานค้างทั้งหมด (${pendingEvents.length} รายการ)`;
 
-            if (fetchedEvents.length === 0) {
+            if (pendingEvents.length === 0) {
                 allContainer.innerHTML = `
                     <div class="text-center py-6">
                         <div class="text-emerald-600 font-bold text-sm">🎉 ไม่พบงานค้าง!</div>
@@ -686,7 +808,7 @@
                 `;
             } else {
                 let html = '';
-                fetchedEvents.slice(0, 5).forEach((item, idx) => {
+                pendingEvents.slice(0, 5).forEach((item, idx) => {
                     const diffMs = item.due_date - now;
                     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
