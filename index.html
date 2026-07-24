@@ -273,7 +273,7 @@
 
     <footer class="bg-white border-t border-slate-200 mt-auto py-4">
         <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
-            PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติเวลา 07:00 น.
+            PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติเวลา 07:00 น., 12:00 น., 18:00 น.
         </div>
     </footer>
 
@@ -293,30 +293,93 @@
             btnReload.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังโหลด...`;
 
             try {
-                // Fetch data.json with cache-busting query parameter
+                // 1. ลองดึงจาก data.json
                 const response = await fetch('./data.json?t=' + new Date().getTime());
                 if (response.ok) {
                     const data = await response.json();
+                    const rawList = data.tasks || data.events || [];
                     
-                    fetchedEvents = data.events.map(e => ({
-                        title: e.title,
-                        due_date: new Date(e.due_date),
+                    fetchedEvents = rawList.map(e => ({
+                        title: e.title || e.summary,
+                        due_date: new Date((e.due || e.due_date).replace(/-/g, '/')),
                         description: e.description || ""
                     }));
 
-                    document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.last_updated} (ตรงกับ LINE)`;
+                    document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
                 } else {
-                    document.getElementById('last-updated-text').innerText = `กำลังรอบันทึกข้อมูลรอบแรกจาก GitHub Actions...`;
+                    throw new Error("data.json not found");
                 }
             } catch (err) {
-                console.warn("Could not load data.json:", err);
-                document.getElementById('last-updated-text').innerText = `ยังไม่พบไฟล์ data.json กรุณากด Run workflow บน GitHub`;
+                console.warn("Could not load data.json, falling back to direct iCal fetch:", err);
+                await fetchDirectiCal();
             }
 
             renderDashboard();
 
             btnReload.disabled = false;
             btnReload.innerHTML = `<i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล`;
+        }
+
+        async function fetchDirectiCal() {
+            const defaultIcalUrl = "https://lms.psu.ac.th/calendar/export_execute.php?userid=56828&authtoken=3463a3bce6ca9586ecb1a5abf0d4757ebf314808&preset_what=all&preset_time=recentupcoming";
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(defaultIcalUrl);
+
+            try {
+                const res = await fetch(proxyUrl);
+                if (res.ok) {
+                    const text = await res.text();
+                    fetchedEvents = parseICal(text);
+                    document.getElementById('last-updated-text').innerText = `อัปเดตสดจาก PSU LMS ผ่าน Proxy (ตรง 100%)`;
+                } else {
+                    document.getElementById('last-updated-text').innerText = `กรุณาเปิดสิทธิ์ GitHub Actions เพื่อสร้าง data.json`;
+                }
+            } catch (e) {
+                console.error("Direct fetch failed", e);
+                document.getElementById('last-updated-text').innerText = `ยังไม่พบไฟล์ data.json กรุณากด Run workflow บน GitHub`;
+            }
+        }
+
+        function parseICal(icalText) {
+            const events = [];
+            const unfolded = icalText.replace(/\r?\n[ \t]/g, '');
+            const blocks = unfolded.split('BEGIN:VEVENT');
+
+            for (let i = 1; i < blocks.length; i++) {
+                const block = blocks[i];
+                let summary = "";
+                let dtendStr = "";
+
+                const lines = block.split(/\r?\n/);
+                for (let line of lines) {
+                    if (line.startsWith('SUMMARY:')) summary = line.replace('SUMMARY:', '').trim();
+                    if (line.startsWith('DTEND:')) dtendStr = line.replace('DTEND:', '').trim();
+                    if (!dtendStr && line.startsWith('DTSTART:')) dtendStr = line.replace('DTSTART:', '').trim();
+                }
+
+                if (summary && dtendStr) {
+                    const cleanTime = dtendStr.split(';')[0];
+                    let dt = null;
+                    if (cleanTime.includes('T')) {
+                        const y = cleanTime.substring(0, 4);
+                        const m = cleanTime.substring(4, 6);
+                        const d = cleanTime.substring(6, 8);
+                        const hh = cleanTime.substring(9, 11);
+                        const mm = cleanTime.substring(11, 13);
+                        const ss = cleanTime.substring(13, 15);
+                        dt = new Date(Date.UTC(y, m - 1, d, hh, mm, ss));
+                    } else {
+                        const y = cleanTime.substring(0, 4);
+                        const m = cleanTime.substring(4, 6);
+                        const d = cleanTime.substring(6, 8);
+                        dt = new Date(y, m - 1, d);
+                    }
+                    if (dt && !isNaN(dt.getTime())) {
+                        events.push({ title: summary, due_date: dt });
+                    }
+                }
+            }
+            events.sort((a, b) => a.due_date - b.due_date);
+            return events;
         }
 
         function renderDashboard() {
