@@ -8,21 +8,135 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Send LINE Notification via Messaging API
+      - name: Send LINE Flex Message
         env:
           CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
           USER_ID: ${{ secrets.LINE_USER_ID }}
           TASK_NAME: ${{ github.event.client_payload.task_title }}
         run: |
+          # สร้าง Flex Message Payload
+          PAYLOAD=$(jq -n \
+            --arg to "$USER_ID" \
+            --arg title "$TASK_NAME" \
+            '{
+              to: $to,
+              messages: [
+                {
+                  type: "flex",
+                  altText: "🎉 อัปเดตสถานะ: ทำเสร็จแล้ว 1 งาน!",
+                  contents: {
+                    type: "bubble",
+                    size: "mega",
+                    header: {
+                      type: "box",
+                      layout: "vertical",
+                      backgroundColor: "#10B981",
+                      paddingAll: "lg",
+                      contents: [
+                        {
+                          type: "text",
+                          text: "TASK COMPLETED!",
+                          color: "#FFFFFF",
+                          size: "xs",
+                          weight: "bold",
+                          space: "xs"
+                        },
+                        {
+                          type: "text",
+                          text: "🎉 ทำเสร็จเรียบร้อยแล้ว",
+                          color: "#FFFFFF",
+                          size: "lg",
+                          weight: "bold",
+                          margin: "xs"
+                        }
+                      ]
+                    },
+                    body: {
+                      type: "box",
+                      layout: "vertical",
+                      paddingAll: "lg",
+                      contents: [
+                        {
+                          type: "text",
+                          text: $title,
+                          weight: "bold",
+                          size: "md",
+                          color: "#1F2937",
+                          wrap: true
+                        },
+                        {
+                          type: "separator",
+                          margin: "lg",
+                          color: "#F3F4F6"
+                        },
+                        {
+                          type: "box",
+                          layout: "horizontal",
+                          margin: "lg",
+                          contents: [
+                            {
+                              type: "text",
+                              text: "สถานะ",
+                              size: "xs",
+                              color: "#9CA3AF"
+                            },
+                            {
+                              type: "text",
+                              text: "Done (เสร็จสิ้น) ✅",
+                              size: "xs",
+                              color: "#059669",
+                              weight: "bold",
+                              align: "end"
+                            }
+                          ]
+                        },
+                        {
+                          type: "box",
+                          layout: "horizontal",
+                          margin: "md",
+                          contents: [
+                            {
+                              type: "text",
+                              text: "คำแนะนำ",
+                              size: "xs",
+                              color: "#9CA3AF"
+                            },
+                            {
+                              type: "text",
+                              text: "เก่งมาก! งานค้างลดลงแล้ว 👏",
+                              size: "xs",
+                              color: "#4B5563",
+                              align: "end"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    footer: {
+                      type: "box",
+                      layout: "vertical",
+                      paddingAll: "md",
+                      contents: [
+                        {
+                          type: "button",
+                          action: {
+                            type: "uri",
+                            label: "เข้าสู่ระบบ PSU LMS2",
+                            uri: "https://lms2.psu.ac.th"
+                          },
+                          style: "primary",
+                          color: "#003366",
+                          height: "sm"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }')
+
+          # ยิง API
           curl -X POST "https://api.line.me/v2/bot/message/push" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $CHANNEL_ACCESS_TOKEN" \
-            -d "{
-              \"to\": \"$USER_ID\",
-              \"messages\": [
-                {
-                  \"type\": \"text\",
-                  \"text\": \"✅ อัปเดตสถานะงาน!\nทำเสร็จเรียบร้อยแล้ว: $TASK_NAME\n🎉 เก่งมากครับ! งานค้างลดลงอีก 1 งานแล้ว\"
-                }
-              ]
-            }"
+            -d "$PAYLOAD"
