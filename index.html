@@ -77,6 +77,9 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3">
+                    <button onclick="resetGithubPat()" title="ตั้งค่า GitHub Token ใหม่" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-white/10 hover:bg-white/20 text-blue-100 transition border border-white/20 flex items-center gap-1">
+                        <i class="fa-solid fa-key text-psu-gold"></i> ตั้งค่า Token
+                    </button>
                     <span id="sync-status-badge" class="px-3 py-1 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         ซิงก์ข้อมูล LINE 100%
@@ -291,8 +294,6 @@
 
     <script>
         // ==================== CONFIGURATION ====================
-        // ใส่ GitHub Personal Access Token (PAT) และชื่อ Repository ของคุณตรงนี้
-        const GITHUB_PAT = 'ghp_xxxxxxxxxxxxxxxxxxxx'; // ใส่ Token ghp_...
         const REPO_OWNER = '058Chayananeiei';
         const REPO_NAME = 'PSU-LMS-LINE-Notifier-Script';
 
@@ -345,11 +346,28 @@
             }
         }
 
+        // ปุ่มสำหรับรีเซ็ตหรือใส่นิพจน์ PAT ใหม่ด้วยตัวเอง
+        function resetGithubPat() {
+            const newPat = prompt("🔑 ใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อใช้ส่งแจ้งเตือนเข้า LINE:");
+            if (newPat && newPat.trim()) {
+                localStorage.setItem('psu_github_pat', newPat.trim());
+                alert("✅ บันทึก GitHub PAT สำเร็จเรียบร้อย!");
+            }
+        }
+
         // ฟังก์ชันส่งสัญญาณเข้า GitHub Actions เพื่อยิง LINE Notify
         async function sendLineTaskDoneNotification(taskTitle) {
-            if (!GITHUB_PAT || GITHUB_PAT.startsWith('ghp_xxxx')) {
-                console.warn("⚠️ ยังไม่ได้ใส่ GITHUB_PAT จริงในไฟล์ index.html (ข้ามการส่งแจ้งเตือนเข้า LINE)");
-                return;
+            let pat = localStorage.getItem('psu_github_pat');
+            
+            if (!pat) {
+                pat = prompt("🔑 โปรดใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อส่งแจ้งเตือนเข้า LINE (กรอกครั้งแรกครั้งเดียว):");
+                if (pat && pat.trim()) {
+                    pat = pat.trim();
+                    localStorage.setItem('psu_github_pat', pat);
+                } else {
+                    console.warn("ไม่ได้ใส่ PAT ข้ามการส่งแจ้งเตือนเข้า LINE");
+                    return;
+                }
             }
 
             try {
@@ -357,7 +375,7 @@
                     method: 'POST',
                     headers: {
                         'Accept': 'application/vnd.github+json',
-                        'Authorization': `Bearer ${GITHUB_PAT}`,
+                        'Authorization': `Bearer ${pat}`,
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
@@ -370,8 +388,11 @@
 
                 if (response.ok) {
                     console.log('✅ ส่งสัญญาณแจ้งเตือนทำเสร็จแล้วเข้า GitHub Actions สำเร็จ!');
+                } else if (response.status === 401) {
+                    alert("❌ Token ไม่ถูกต้องหรือหมดอายุ โปรดลองใส่อีกครั้ง");
+                    localStorage.removeItem('psu_github_pat');
                 } else {
-                    console.error('❌ ไม่สามารถส่งสัญญาณไปยัง GitHub Actions ได้:', response.statusText);
+                    console.error('❌ ไม่สามารถส่งสัญญาณไปยัง GitHub Actions ได้ Status:', response.status);
                 }
             } catch (error) {
                 console.error('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ GitHub API:', error);
