@@ -309,7 +309,7 @@
                     
                     const parsedList = rawList.map(e => ({
                         title: e.title || e.summary,
-                        due_date: new Date((e.due || e.due_date).replace(/-/g, '/')),
+                        due_date: new Date(e.due || e.due_date),
                         description: e.description || ""
                     }));
 
