@@ -1,6 +1,6 @@
 {
-  "last_updated": "25/07/2026 08:28:14",
-  "total_tasks": 35,
+  "last_updated": "25/07/2026 11:33:12",
+  "total_tasks": 36,
   "events": [
     {
       "title": "Lab 5 User journey map is due",
@@ -119,6 +119,11 @@
     },
     {
       "title": "***ส่ง CLASSWORK 1 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
+      "due_date": "2026-08-16T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "***ส่ง CLASSWORK 2 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
       "due_date": "2026-08-16T23:59:00",
       "description": ""
     },
