@@ -4,25 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PSU LMS Assignment Calendar & LINE Notifier</title>
-    <!-- Tailwind CSS & FontAwesome -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Kanit & Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Kanit', 'Inter', 'sans-serif'] },
-                    colors: { psu: { blue: '#003366', lightBlue: '#0055a5', gold: '#ffb703' } }
+                    fontFamily: {
+                        sans: ['Kanit', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        psu: {
+                            blue: '#003366',
+                            lightBlue: '#0055a5',
+                            accent: '#00a8cc',
+                            gold: '#ffb703'
+                        }
+                    }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #f8fafc; font-family: 'Kanit', sans-serif; }
-        .calendar-day-cell { min-height: 85px; transition: all 0.2s ease; }
-        .calendar-day-cell:hover { background-color: #f1f5f9; }
+        body {
+            background-color: #f8fafc;
+            font-family: 'Kanit', sans-serif;
+        }
+        .line-bubble-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .calendar-day-cell {
+            min-height: 85px;
+            transition: all 0.2s ease;
+        }
+        .calendar-day-cell:hover {
+            background-color: #f1f5f9;
+        }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
@@ -31,17 +68,20 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="bg-white/10 p-2 rounded-xl border border-white/20">
+                    <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20">
                         <i class="fa-solid fa-calendar-days text-2xl text-psu-gold"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-lg sm:text-xl leading-tight">PSU LMS Calendar & Notifier</h1>
-                        <p class="text-xs text-blue-200">ตารางปฏิทินการบ้าน & สรุปภาระงานประจำสัปดาห์</p>
+                        <h1 class="font-bold text-lg sm:text-xl tracking-wide leading-tight">PSU LMS Calendar & Notifier</h1>
+                        <p class="text-xs text-blue-200 font-light">ตารางปฏิทินการบ้าน & ระบบแจ้งเตือน LINE อัตโนมัติ</p>
                     </div>
                 </div>
-                <button onclick="openCustomTaskModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
-                    <i class="fa-solid fa-plus"></i> เพิ่มงานส่วนตัว
-                </button>
+                <div class="flex items-center space-x-3">
+                    <span id="sync-status-badge" class="px-3 py-1 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        ซิงก์ข้อมูล LINE 100%
+                    </span>
+                </div>
             </div>
         </div>
     </nav>
@@ -49,175 +89,340 @@
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
         <!-- Status Banner -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="p-2.5 rounded-xl bg-blue-50 text-psu-blue">
                     <i class="fa-solid fa-cloud-arrow-down text-lg"></i>
                 </div>
                 <div>
-                    <h2 class="text-sm font-semibold text-slate-800">ซิงก์ข้อมูลตรงกับ LINE Notification</h2>
-                    <p id="last-updated-text" class="text-xs text-slate-500">กำลังโหลด...</p>
+                    <h2 class="text-sm font-semibold text-slate-800">ข้อมูลการบ้านซิงก์ตรงกับ LINE Notification</h2>
+                    <p id="last-updated-text" class="text-xs text-slate-500">อัปเดตล่าสุด: กำลังโหลดข้อมูล...</p>
                 </div>
             </div>
-            <button onclick="loadCalendarData()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2">
-                <i class="fa-solid fa-rotate"></i> รีเฟรช
+            <button onclick="loadCalendarData()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
+                <i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล
             </button>
         </div>
 
+        <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Stats & Calendar -->
+            <!-- Left Column: Stats & Calendar -->
             <div class="lg:col-span-8 flex flex-col gap-6">
                 
-                <div class="grid grid-cols-4 gap-3">
-                    <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200">
-                        <span class="text-xs text-slate-500 font-medium">งานทั้งหมด</span>
-                        <div class="text-xl font-bold text-psu-blue mt-1" id="stat-total">0</div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+                        <span class="text-xs text-slate-500 font-medium">งานค้างทั้งหมด</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="stat-total" class="text-2xl font-bold text-psu-blue">0</span>
+                            <span class="p-2 rounded-lg bg-blue-50 text-psu-blue text-xs"><i class="fa-solid fa-list-check"></i></span>
+                        </div>
                     </div>
-                    <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200">
-                        <span class="text-xs text-slate-500 font-medium">ด่วน (≤3 วัน)</span>
-                        <div class="text-xl font-bold text-rose-600 mt-1" id="stat-urgent">0</div>
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+                        <span class="text-xs text-slate-500 font-medium">ต้องส่งด่วน (≤3 วัน)</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="stat-urgent" class="text-2xl font-bold text-rose-600">0</span>
+                            <span class="p-2 rounded-lg bg-rose-50 text-rose-600 text-xs"><i class="fa-solid fa-fire"></i></span>
+                        </div>
                     </div>
-                    <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200">
-                        <span class="text-xs text-purple-600 font-semibold">สัปดาห์นี้</span>
-                        <div class="text-xl font-bold text-purple-600 mt-1" id="stat-weekly">0</div>
-                    </div>
-                    <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
                         <span class="text-xs text-slate-500 font-medium">เหลือ > 3 วัน</span>
-                        <div class="text-xl font-bold text-emerald-600 mt-1" id="stat-normal">0</div>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="stat-normal" class="text-2xl font-bold text-emerald-600">0</span>
+                            <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600 text-xs"><i class="fa-solid fa-clock"></i></span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b">
-                        <h2 class="font-bold text-slate-800 text-base">ปฏิทินกำหนดส่งงาน</h2>
-                        <div class="flex gap-2">
-                            <button onclick="switchView('calendar')" id="tab-calendar" class="px-3 py-1 rounded-lg bg-psu-blue text-white text-xs font-semibold">ปฏิทิน</button>
-                            <button onclick="switchView('list')" id="tab-list" class="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs">รายการ</button>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 flex-grow">
+                    
+                    <!-- View Mode Switcher Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-check text-psu-blue text-lg"></i>
+                            <h2 class="font-bold text-slate-800 text-base">ปฏิทินกำหนดส่งงาน</h2>
+                        </div>
+
+                        <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-medium self-start sm:self-auto">
+                            <button onclick="switchView('calendar')" id="tab-calendar" class="px-4 py-1.5 rounded-lg bg-white text-psu-blue shadow-sm font-semibold transition">
+                                <i class="fa-solid fa-calendar-days mr-1"></i> มุมมองปฏิทิน
+                            </button>
+                            <button onclick="switchView('list')" id="tab-list" class="px-4 py-1.5 rounded-lg text-slate-600 hover:text-psu-blue transition">
+                                <i class="fa-solid fa-bars-staggered mr-1"></i> รายการภาระงาน
+                            </button>
                         </div>
                     </div>
 
-                    <div id="view-calendar-container">
-                        <div class="flex items-center justify-between mb-3">
-                            <button onclick="changeMonth(-1)" class="text-xs text-slate-600 font-semibold"><i class="fa-solid fa-chevron-left"></i> เดือนก่อนหน้า</button>
-                            <h3 id="calendar-month-year" class="font-bold text-slate-800 text-sm">-- --</h3>
-                            <button onclick="changeMonth(1)" class="text-xs text-slate-600 font-semibold">เดือนถัดไป <i class="fa-solid fa-chevron-right"></i></button>
+                    <!-- VIEW 1: MONTHLY CALENDAR GRID -->
+                    <div id="view-calendar-container" class="block">
+                        <div class="flex items-center justify-between mb-4">
+                            <button onclick="changeMonth(-1)" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition flex items-center gap-1 text-xs font-semibold">
+                                <i class="fa-solid fa-chevron-left"></i> เดือนก่อนหน้า
+                            </button>
+                            <h3 id="calendar-month-year" class="font-bold text-slate-800 text-base">-- --</h3>
+                            <button onclick="changeMonth(1)" class="p-2 rounded-xl hover:bg-slate-100 text-slate-600 transition flex items-center gap-1 text-xs font-semibold">
+                                เดือนถัดไป <i class="fa-solid fa-chevron-right"></i>
+                            </button>
                         </div>
+
+                        <!-- Days of Week Header -->
                         <div class="grid grid-cols-7 gap-1 text-center font-semibold text-xs text-slate-500 mb-2">
-                            <div class="text-rose-500">อา.</div><div>จ.</div><div>อ.</div><div>พ.</div><div>พฤ.</div><div>ศ.</div><div class="text-blue-500">ส.</div>
+                            <div class="py-1 text-rose-500">อา.</div>
+                            <div class="py-1">จ.</div>
+                            <div class="py-1">อ.</div>
+                            <div class="py-1">พ.</div>
+                            <div class="py-1">พฤ.</div>
+                            <div class="py-1">ศ.</div>
+                            <div class="py-1 text-blue-500">ส.</div>
                         </div>
-                        <div id="calendar-grid" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200"></div>
+
+                        <!-- Calendar Grid -->
+                        <div id="calendar-grid" class="grid grid-cols-7 gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-200">
+                            <!-- Dynamic Calendar Cells -->
+                        </div>
+
+                        <!-- Filter Status Bar -->
+                        <div id="filter-bar" class="mt-4 p-3 rounded-xl bg-blue-50 border border-blue-100 text-xs items-center justify-between hidden">
+                            <span id="filter-text" class="text-psu-blue font-medium">กำลังแสดงงานเฉพาะวันที่เลือก</span>
+                            <button onclick="clearDateFilter()" class="text-rose-600 hover:underline font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-xmark"></i> แสดงงานทั้งหมด
+                            </button>
+                        </div>
                     </div>
 
-                    <div id="view-list-container" class="hidden space-y-3 max-h-[500px] overflow-y-auto" id="tasks-container"></div>
+                    <!-- VIEW 2: TASK LIST -->
+                    <div id="view-list-container" class="hidden">
+                        <div class="flex items-center justify-between mb-3 text-xs text-slate-500">
+                            <span id="list-title-text">รายการภาระงานทั้งหมด</span>
+                        </div>
+
+                        <div id="tasks-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                            <!-- Dynamic Task Cards -->
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
 
-            <!-- Preview Card Column -->
             <div class="lg:col-span-4 flex flex-col gap-6">
-                <div class="bg-slate-800 rounded-2xl p-4 text-white border border-slate-700">
-                    <h3 class="font-semibold text-sm mb-3"><i class="fa-brands fa-line text-emerald-400 mr-1"></i> LINE Flex Live Preview</h3>
-                    <div class="bg-slate-200 p-3 rounded-xl text-slate-900 max-w-sm mx-auto space-y-3">
-                        <div class="bg-[#6f42c1] text-white p-3 rounded-t-xl">
-                            <div class="text-[9px] text-purple-200 font-bold">WEEKLY SUMMARY</div>
-                            <div class="text-sm font-bold">📊 สรุปภาระงานประจำสัปดาห์</div>
-                        </div>
-                        <div class="bg-white p-3 rounded-b-xl text-xs space-y-2">
-                            <div class="bg-purple-50 p-2 rounded-lg text-purple-800 font-semibold flex justify-between">
-                                <span>งานสัปดาห์นี้:</span>
-                                <span id="preview-weekly-count">0 รายการ</span>
+
+                <!-- LINE Flex Message Live Preview -->
+                <div class="bg-slate-800 rounded-2xl p-5 text-white shadow-md border border-slate-700">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-brands fa-line text-2xl text-emerald-400"></i>
+                            <div>
+                                <h3 class="font-semibold text-sm">LINE Flex Preview</h3>
+                                <p class="text-xs text-slate-400">ตัวอย่างข้อความที่ส่งเข้า LINE</p>
                             </div>
                         </div>
+                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full font-medium">Live Sync</span>
                     </div>
+
+                    <!-- Flex Card Switcher Tabs -->
+                    <div class="flex bg-slate-700/60 p-1 rounded-xl text-xs font-medium mb-4 gap-1">
+                        <button onclick="switchFlexCard('urgent')" id="flex-tab-urgent" class="flex-1 py-1.5 rounded-lg bg-rose-600 text-white font-semibold transition text-center text-[11px]">
+                            🚨 การ์ดงานเร่งด่วน
+                        </button>
+                        <button onclick="switchFlexCard('all')" id="flex-tab-all" class="flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]">
+                            📚 การ์ดงานทั้งหมด
+                        </button>
+                    </div>
+
+                    <!-- LINE Bubble Mockup Container -->
+                    <div class="bg-slate-200 p-3 rounded-xl text-slate-900 line-bubble-shadow max-w-sm mx-auto overflow-hidden">
+                        
+                        <!-- CARD 1: URGENT FLEX CARD -->
+                        <div id="flex-card-urgent-view" class="block">
+                            <div id="flex-urgent-header" class="bg-[#DC3545] text-white p-3.5 rounded-t-xl">
+                                <div class="text-[10px] font-bold tracking-wider text-[#FFC107]">PSU LMS URGENT ALERT</div>
+                                <div id="flex-urgent-title" class="text-base font-bold mt-0.5">🚨 งานใกล้หมดเวลา</div>
+                                <div id="flex-urgent-date" class="text-[11px] text-slate-200 mt-0.5">ประจำวันที่ --/--/----</div>
+                            </div>
+                            <div id="flex-urgent-body" class="bg-white p-3.5 space-y-3 text-xs min-h-[120px]">
+                                <div class="text-center py-6 text-slate-400">กำลังโหลด...</div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: ALL TASKS FLEX CARD -->
+                        <div id="flex-card-all-view" class="hidden">
+                            <div class="bg-[#003366] text-white p-3.5 rounded-t-xl">
+                                <div class="text-[10px] font-bold tracking-wider text-[#80BFFF]">PSU LMS ALL TASKS</div>
+                                <div id="flex-all-title" class="text-base font-bold mt-0.5">📚 สรุปงานค้างทั้งหมด</div>
+                                <div id="flex-all-date" class="text-[11px] text-slate-200 mt-0.5">ประจำวันที่ --/--/----</div>
+                            </div>
+                            <div id="flex-all-body" class="bg-white p-3.5 space-y-3 text-xs min-h-[120px]">
+                                <div class="text-center py-6 text-slate-400">กำลังโหลด...</div>
+                            </div>
+                            <div class="bg-white p-3 pt-0 rounded-b-xl border-t border-slate-100">
+                                <a href="https://lms2.psu.ac.th" target="_blank" class="block w-full text-center bg-[#003366] hover:bg-blue-900 text-white font-medium py-2 rounded-lg text-xs transition">
+                                    เข้าสู่ระบบ PSU LMS2
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
 
         </div>
     </main>
 
-    <!-- Modal เพิ่มงานส่วนตัว -->
-    <div id="modal-custom-task" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50">
-        <div class="bg-white p-5 rounded-2xl max-w-md w-full mx-4 shadow-xl border border-slate-200">
-            <h3 class="font-bold text-slate-800 text-base mb-3"><i class="fa-solid fa-plus text-emerald-500 mr-1"></i> เพิ่มงานส่วนตัวลงปฏิทิน</h3>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">ชื่องาน / รายงาน / นัดหมาย</label>
-                    <input type="text" id="custom-title" class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-psu-blue" placeholder="เช่น ส่งการบ้านโปรเจกต์กลุ่ม">
-                </div>
-                <div>
-                    <label class="block font-semibold text-slate-700 mb-1">วันและเวลาส่งงาน</label>
-                    <input type="datetime-local" id="custom-due" class="w-full border border-slate-300 rounded-xl p-2.5 focus:outline-psu-blue">
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 mt-4">
-                <button onclick="closeCustomTaskModal()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200">ยกเลิก</button>
-                <button onclick="saveCustomTask()" class="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-emerald-500 hover:bg-emerald-600">บันทึกงาน</button>
-            </div>
+    <footer class="bg-white border-t border-slate-200 mt-auto py-4">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติเวลา 07:00 น., 12:00 น., 18:00 น.
         </div>
-    </div>
+    </footer>
 
     <script>
         let fetchedEvents = [];
-        let customTasks = JSON.parse(localStorage.getItem('psu_custom_tasks') || '[]');
         let currentDisplayDate = new Date();
+        let selectedFilterDateStr = null;
+        let activeFlexTab = 'urgent';
 
-        window.onload = function() { loadCalendarData(); };
+        window.onload = function() {
+            loadCalendarData();
+        };
 
         async function loadCalendarData() {
+            const btnReload = document.getElementById('btn-reload');
+            btnReload.disabled = true;
+            btnReload.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังโหลด...`;
+
             try {
+                // 1. ลองดึงจาก data.json
                 const response = await fetch('./data.json?t=' + new Date().getTime());
                 if (response.ok) {
                     const data = await response.json();
-                    fetchedEvents = (data.events || []).map(e => ({
-                        title: e.title,
-                        due_date: new Date(e.due_date),
-                        is_custom: false
+                    const rawList = data.tasks || data.events || [];
+                    
+                    fetchedEvents = rawList.map(e => ({
+                        title: e.title || e.summary,
+                        due_date: new Date((e.due || e.due_date).replace(/-/g, '/')),
+                        description: e.description || ""
                     }));
+
+                    document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
+                } else {
+                    throw new Error("data.json not found");
                 }
-            } catch (err) { console.warn(err); }
+            } catch (err) {
+                console.warn("Could not load data.json, falling back to direct iCal fetch:", err);
+                await fetchDirectiCal();
+            }
 
-            // รวมงานส่วนตัวที่เพิ่มเองบนหน้าเว็บ
-            customTasks.forEach(ct => {
-                fetchedEvents.push({ title: '📌 ' + ct.title, due_date: new Date(ct.due), is_custom: true });
-            });
-
-            fetchedEvents.sort((a, b) => a.due_date - b.due_date);
             renderDashboard();
+
+            btnReload.disabled = false;
+            btnReload.innerHTML = `<i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล`;
+        }
+
+        async function fetchDirectiCal() {
+            const defaultIcalUrl = "https://lms.psu.ac.th/calendar/export_execute.php?userid=56828&authtoken=3463a3bce6ca9586ecb1a5abf0d4757ebf314808&preset_what=all&preset_time=recentupcoming";
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(defaultIcalUrl);
+
+            try {
+                const res = await fetch(proxyUrl);
+                if (res.ok) {
+                    const text = await res.text();
+                    fetchedEvents = parseICal(text);
+                    document.getElementById('last-updated-text').innerText = `อัปเดตสดจาก PSU LMS ผ่าน Proxy (ตรง 100%)`;
+                } else {
+                    document.getElementById('last-updated-text').innerText = `กรุณาเปิดสิทธิ์ GitHub Actions เพื่อสร้าง data.json`;
+                }
+            } catch (e) {
+                console.error("Direct fetch failed", e);
+                document.getElementById('last-updated-text').innerText = `ยังไม่พบไฟล์ data.json กรุณากด Run workflow บน GitHub`;
+            }
+        }
+
+        function parseICal(icalText) {
+            const events = [];
+            const unfolded = icalText.replace(/\r?\n[ \t]/g, '');
+            const blocks = unfolded.split('BEGIN:VEVENT');
+
+            for (let i = 1; i < blocks.length; i++) {
+                const block = blocks[i];
+                let summary = "";
+                let dtendStr = "";
+
+                const lines = block.split(/\r?\n/);
+                for (let line of lines) {
+                    if (line.startsWith('SUMMARY:')) summary = line.replace('SUMMARY:', '').trim();
+                    if (line.startsWith('DTEND:')) dtendStr = line.replace('DTEND:', '').trim();
+                    if (!dtendStr && line.startsWith('DTSTART:')) dtendStr = line.replace('DTSTART:', '').trim();
+                }
+
+                if (summary && dtendStr) {
+                    const cleanTime = dtendStr.split(';')[0];
+                    let dt = null;
+                    if (cleanTime.includes('T')) {
+                        const y = cleanTime.substring(0, 4);
+                        const m = cleanTime.substring(4, 6);
+                        const d = cleanTime.substring(6, 8);
+                        const hh = cleanTime.substring(9, 11);
+                        const mm = cleanTime.substring(11, 13);
+                        const ss = cleanTime.substring(13, 15);
+                        dt = new Date(Date.UTC(y, m - 1, d, hh, mm, ss));
+                    } else {
+                        const y = cleanTime.substring(0, 4);
+                        const m = cleanTime.substring(4, 6);
+                        const d = cleanTime.substring(6, 8);
+                        dt = new Date(y, m - 1, d);
+                    }
+                    if (dt && !isNaN(dt.getTime())) {
+                        events.push({ title: summary, due_date: dt });
+                    }
+                }
+            }
+            events.sort((a, b) => a.due_date - b.due_date);
+            return events;
         }
 
         function renderDashboard() {
             const now = new Date();
-            const endOfWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-            
-            let urgent = 0, weekly = 0, normal = 0;
-            fetchedEvents.forEach(e => {
-                const diffDays = Math.floor((e.due_date - now) / (1000 * 60 * 60 * 24));
-                if (diffDays <= 3) urgent++; else normal++;
-                if (e.due_date >= now && e.due_date <= endOfWeek) weekly++;
+            let urgentCount = 0;
+            let normalCount = 0;
+
+            fetchedEvents.forEach(item => {
+                const diffMs = item.due_date - now;
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                if (diffDays <= 3) {
+                    urgentCount++;
+                } else {
+                    normalCount++;
+                }
             });
 
             document.getElementById('stat-total').innerText = fetchedEvents.length;
-            document.getElementById('stat-urgent').innerText = urgent;
-            document.getElementById('stat-weekly').innerText = weekly;
-            document.getElementById('stat-normal').innerText = normal;
-            document.getElementById('preview-weekly-count').innerText = weekly + " รายการ";
+            document.getElementById('stat-urgent').innerText = urgentCount;
+            document.getElementById('stat-normal').innerText = normalCount;
 
             renderCalendarGrid();
+            renderTaskList();
+            renderFlexPreview();
         }
 
-        function openCustomTaskModal() { document.getElementById('modal-custom-task').classList.remove('hidden'); }
-        function closeCustomTaskModal() { document.getElementById('modal-custom-task').classList.add('hidden'); }
+        function switchView(mode) {
+            const tabCal = document.getElementById('tab-calendar');
+            const tabList = document.getElementById('tab-list');
+            const viewCal = document.getElementById('view-calendar-container');
+            const viewList = document.getElementById('view-list-container');
 
-        function saveCustomTask() {
-            const title = document.getElementById('custom-title').value.trim();
-            const due = document.getElementById('custom-due').value;
-            if (!title || !due) return alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-
-            customTasks.push({ title, due });
-            localStorage.setItem('psu_custom_tasks', JSON.stringify(customTasks));
-            closeCustomTaskModal();
-            loadCalendarData();
+            if (mode === 'calendar') {
+                tabCal.className = "px-4 py-1.5 rounded-lg bg-white text-psu-blue shadow-sm font-semibold transition";
+                tabList.className = "px-4 py-1.5 rounded-lg text-slate-600 hover:text-psu-blue transition";
+                viewCal.classList.remove('hidden');
+                viewList.classList.add('hidden');
+            } else {
+                tabList.className = "px-4 py-1.5 rounded-lg bg-white text-psu-blue shadow-sm font-semibold transition";
+                tabCal.className = "px-4 py-1.5 rounded-lg text-slate-600 hover:text-psu-blue transition";
+                viewList.classList.remove('hidden');
+                viewCal.classList.add('hidden');
+            }
         }
 
         function changeMonth(delta) {
@@ -228,36 +433,270 @@
         function renderCalendarGrid() {
             const grid = document.getElementById('calendar-grid');
             const title = document.getElementById('calendar-month-year');
+            
             const year = currentDisplayDate.getFullYear();
             const month = currentDisplayDate.getMonth();
-            const thaiMonths = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-            
+
+            const thaiMonths = [
+                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+            ];
+
             title.innerText = `${thaiMonths[month]} ${year + 543}`;
+
             const firstDayIndex = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevMonthDays = new Date(year, month, 0).getDate();
+
+            const today = new Date();
             let html = '';
 
             for (let i = firstDayIndex - 1; i >= 0; i--) {
-                html += `<div class="bg-slate-50 p-2 calendar-day-cell rounded-xl opacity-30 text-xs"></div>`;
+                const dayNum = prevMonthDays - i;
+                html += `<div class="bg-slate-50/50 p-2 calendar-day-cell rounded-xl opacity-30 text-xs font-medium text-slate-400">${dayNum}</div>`;
             }
 
             for (let day = 1; day <= daysInMonth; day++) {
-                const dayEvents = fetchedEvents.filter(e => e.due_date.getFullYear() === year && e.due_date.getMonth() === month && e.due_date.getDate() === day);
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+                const isSelected = selectedFilterDateStr === dateKey;
+
+                const dayEvents = fetchedEvents.filter(e => {
+                    const eDate = e.due_date;
+                    return eDate.getFullYear() === year && eDate.getMonth() === month && eDate.getDate() === day;
+                });
+
+                let borderStyle = isSelected ? "ring-2 ring-psu-blue bg-blue-50/80" : "bg-white";
+                let todayBadge = isToday ? "bg-psu-blue text-white font-bold rounded-full w-5 h-5 flex items-center justify-center" : "text-slate-700 font-semibold";
+
                 html += `
-                    <div class="bg-white p-1.5 calendar-day-cell rounded-xl border border-slate-200 flex flex-col justify-between text-xs">
-                        <div class="font-semibold text-slate-700">${day}</div>
-                        <div class="space-y-1">
-                            ${dayEvents.map(e => `<div class="bg-blue-50 border-l-2 border-psu-blue text-[10px] p-0.5 truncate font-medium">${e.title}</div>`).join('')}
+                    <div onclick="selectDateFilter('${dateKey}')" class="${borderStyle} p-1.5 calendar-day-cell rounded-xl border border-slate-200/80 cursor-pointer flex flex-col justify-between hover:border-psu-blue shadow-2xs relative">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="${todayBadge}">${day}</span>
+                            ${dayEvents.length > 0 ? `<span class="bg-psu-blue text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">${dayEvents.length}</span>` : ''}
+                        </div>
+                        
+                        <div class="mt-1 space-y-1 max-h-[45px] overflow-hidden">
+                            ${dayEvents.map(e => {
+                                const diffMs = e.due_date - today;
+                                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                                let colorClass = "bg-emerald-500";
+                                if (diffDays < 1) colorClass = "bg-rose-500 animate-pulse";
+                                else if (diffDays <= 3) colorClass = "bg-amber-500";
+
+                                return `
+                                    <div class="text-[10px] bg-slate-100 p-1 rounded-lg border-l-2 ${colorClass.replace('bg-', 'border-')} truncate text-slate-700 font-medium leading-none">
+                                        ${e.title}
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
                     </div>
                 `;
             }
+
             grid.innerHTML = html;
         }
 
-        function switchView(mode) {
-            document.getElementById('view-calendar-container').classList.toggle('hidden', mode !== 'calendar');
-            document.getElementById('view-list-container').classList.toggle('hidden', mode !== 'list');
+        function selectDateFilter(dateKey) {
+            selectedFilterDateStr = dateKey;
+            const [y, m, d] = dateKey.split('-');
+            const formattedDate = `${parseInt(d)}/${parseInt(m)}/${parseInt(y) + 543}`;
+
+            document.getElementById('filter-bar').classList.remove('hidden');
+            document.getElementById('filter-bar').classList.add('flex');
+            document.getElementById('filter-text').innerText = `📌 กำลังแสดงเฉพาะงานที่มีกำหนดส่งวันที่ ${formattedDate}`;
+
+            renderCalendarGrid();
+            renderTaskList();
+            switchView('list');
+        }
+
+        function clearDateFilter() {
+            selectedFilterDateStr = null;
+            document.getElementById('filter-bar').classList.add('hidden');
+            document.getElementById('filter-bar').classList.remove('flex');
+            renderCalendarGrid();
+            renderTaskList();
+        }
+
+        function renderTaskList() {
+            const container = document.getElementById('tasks-container');
+            const now = new Date();
+
+            let displayList = fetchedEvents;
+
+            if (selectedFilterDateStr) {
+                const [y, m, d] = selectedFilterDateStr.split('-');
+                displayList = fetchedEvents.filter(e => {
+                    const ed = e.due_date;
+                    return ed.getFullYear() === parseInt(y) && ed.getMonth() === (parseInt(m) - 1) && ed.getDate() === parseInt(d);
+                });
+            }
+
+            if (!displayList || displayList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                        <i class="fa-solid fa-circle-check text-3xl text-emerald-500 mb-2"></i>
+                        <h3 class="font-bold text-slate-700 text-sm">ไม่พบภาระงานค้างส่ง</h3>
+                        <p class="text-xs text-slate-500 mt-1">ส่งงานครบทุกวิชาเรียบร้อยแล้วครับ</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            displayList.forEach((item, index) => {
+                const diffMs = item.due_date - now;
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+                let badgeBg = "bg-emerald-100 text-emerald-700 border-emerald-200";
+                let badgeText = `📌 เหลือ ${diffDays} วัน`;
+
+                if (diffDays < 1) {
+                    badgeBg = "bg-rose-100 text-rose-700 border-rose-200 animate-pulse";
+                    badgeText = "🚨 ด่วนมาก!";
+                } else if (diffDays <= 3) {
+                    badgeBg = "bg-amber-100 text-amber-700 border-amber-200";
+                    badgeText = `⚠️ เหลือ ${diffDays} วัน ${diffHours} ชม.`;
+                }
+
+                const dateFormatted = item.due_date.toLocaleDateString('th-TH', {
+                    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                }) + ' น.';
+
+                html += `
+                    <div class="p-3.5 bg-slate-50 hover:bg-blue-50/40 rounded-xl border border-slate-200 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-slate-400 text-xs">#${index + 1}</span>
+                                <h4 class="font-bold text-slate-800 text-sm">${item.title}</h4>
+                            </div>
+                            <div class="text-xs text-slate-500 space-y-0.5">
+                                <p><i class="fa-regular fa-calendar-check text-slate-400 w-4"></i> กำหนดส่ง: <span class="font-medium text-slate-700">${dateFormatted}</span></p>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="inline-block px-3 py-1 rounded-lg text-xs font-semibold border ${badgeBg} whitespace-nowrap">
+                                ${badgeText}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function switchFlexCard(cardType) {
+            activeFlexTab = cardType;
+            const tabUrgent = document.getElementById('flex-tab-urgent');
+            const tabAll = document.getElementById('flex-tab-all');
+            const viewUrgent = document.getElementById('flex-card-urgent-view');
+            const viewAll = document.getElementById('flex-card-all-view');
+
+            if (cardType === 'urgent') {
+                tabUrgent.className = "flex-1 py-1.5 rounded-lg bg-rose-600 text-white font-semibold transition text-center text-[11px]";
+                tabAll.className = "flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]";
+                viewUrgent.classList.remove('hidden');
+                viewAll.classList.add('hidden');
+            } else {
+                tabAll.className = "flex-1 py-1.5 rounded-lg bg-psu-blue text-white font-semibold transition text-center text-[11px]";
+                tabUrgent.className = "flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]";
+                viewAll.classList.remove('hidden');
+                viewUrgent.classList.add('hidden');
+            }
+        }
+
+        function renderFlexPreview() {
+            const todayStr = new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            
+            document.getElementById('flex-urgent-date').innerText = `ประจำวันที่ ${todayStr}`;
+            document.getElementById('flex-all-date').innerText = `ประจำวันที่ ${todayStr}`;
+
+            const now = new Date();
+
+            // 1. Render Urgent Flex Card
+            const urgentEvents = fetchedEvents.filter(item => {
+                const diffMs = item.due_date - now;
+                return Math.floor(diffMs / (1000 * 60 * 60 * 24)) <= 3;
+            });
+
+            const urgentContainer = document.getElementById('flex-urgent-body');
+            document.getElementById('flex-urgent-title').innerText = `🚨 งานใกล้หมดเวลา (${urgentEvents.length} รายการ)`;
+
+            if (urgentEvents.length === 0) {
+                urgentContainer.innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="text-emerald-600 font-bold text-sm">🎉 ชิลๆ ได้เลย!</div>
+                        <div class="text-slate-500 text-xs mt-1">ไม่มีงานที่มีกำหนดส่งภายใน 3 วันนี้ครับ</div>
+                    </div>
+                `;
+            } else {
+                let html = '';
+                urgentEvents.forEach((item, idx) => {
+                    const diffMs = item.due_date - now;
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                    const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+                    let badgeBg = diffDays < 1 ? "bg-[#DC3545]" : "bg-[#FD7E14]";
+                    let badgeText = diffDays < 1 ? `🚨 เหลือ ${diffHours} ชม.` : `⚠️ เหลือ ${diffDays} วัน ${diffHours} ชม.`;
+
+                    const dateFormatted = item.due_date.toLocaleDateString('th-TH', {
+                        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    }) + ' น.';
+
+                    html += `
+                        <div class="${idx > 0 ? 'pt-2 border-t border-slate-100' : ''}">
+                            <div class="flex items-start justify-between gap-1">
+                                <span class="font-bold text-slate-800 text-xs flex-grow leading-tight">${idx + 1}. ${item.title}</span>
+                                <span class="${badgeBg} text-white text-[9px] px-1.5 py-0.5 rounded font-bold whitespace-nowrap">${badgeText}</span>
+                            </div>
+                            <div class="text-[10px] text-rose-600 font-semibold mt-1">
+                                • กำหนดส่ง: ${dateFormatted}
+                            </div>
+                        </div>
+                    `;
+                });
+                urgentContainer.innerHTML = html;
+            }
+
+            // 2. Render All Tasks Flex Card
+            const allContainer = document.getElementById('flex-all-body');
+            document.getElementById('flex-all-title').innerText = `📚 สรุปงานค้างทั้งหมด (${fetchedEvents.length} รายการ)`;
+
+            if (fetchedEvents.length === 0) {
+                allContainer.innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="text-emerald-600 font-bold text-sm">🎉 ไม่พบงานค้าง!</div>
+                        <div class="text-slate-500 text-xs mt-1">ขณะนี้ส่งงานครบทุกวิชาแล้วครับ</div>
+                    </div>
+                `;
+            } else {
+                let html = '';
+                fetchedEvents.slice(0, 5).forEach((item, idx) => {
+                    const diffMs = item.due_date - now;
+                    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+                    const dateFormatted = item.due_date.toLocaleDateString('th-TH', {
+                        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    }) + ' น.';
+
+                    html += `
+                        <div class="${idx > 0 ? 'pt-2 border-t border-slate-100' : ''}">
+                            <div class="flex items-start justify-between gap-1">
+                                <span class="font-bold text-slate-800 text-xs flex-grow leading-tight">${idx + 1}. ${item.title}</span>
+                                <span class="text-[#0055a5] font-bold text-[10px]">อีก ${diffDays} วัน</span>
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-0.5">
+                                • กำหนดส่ง: ${dateFormatted}
+                            </div>
+                        </div>
+                    `;
+                });
+                allContainer.innerHTML = html;
+            }
         }
     </script>
 </body>
