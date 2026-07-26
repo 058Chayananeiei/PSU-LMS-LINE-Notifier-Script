@@ -13,6 +13,12 @@ LINE_CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "")
 LINE_USER_ID = os.environ.get("LINE_USER_ID", "")
 LINE_NOTIFY_TOKEN = os.environ.get("LINE_NOTIFY_TOKEN", "")
 
+# 📌 รายการงานที่ส่ง/ทำเสร็จแล้ว หรือต้องการข้าม (ไม่ให้แจ้งเตือนใน LINE และหน้าเว็บ)
+# สามารถใส่ชื่องาน หรือคีย์เวิร์ดบางส่วนได้ เช่น ["Lab 1", "Quiz 2", "งานวิชา Database"]
+IGNORED_KEYWORDS = [
+    # "ชื่องานหรือคีย์เวิร์ดที่ทำเสร็จแล้วใส่ตรงนี้",
+]
+
 # ปรับโซนเวลา (ประเทศไทย UTC+7)
 TZ_OFFSET = timedelta(hours=7)
 
@@ -80,6 +86,12 @@ def fetch_lms_events(ical_url):
             continue
 
         title = unescape_ical(summary_match.group(1).strip())
+        
+        # 📌 ตรวจสอบว่าชื่องานตรงกับรายการที่ทำเสร็จแล้ว (IGNORED_KEYWORDS) หรือไม่
+        if any(kw.strip().lower() in title.lower() for kw in IGNORED_KEYWORDS if kw.strip()):
+            print(f"🙈 ข้ามงานที่เสร็จแล้ว: {title}")
+            continue
+
         dt_target = dtend_match.group(0) if dtend_match else (dtstart_match.group(0) if dtstart_match else None)
         
         if not dt_target:
