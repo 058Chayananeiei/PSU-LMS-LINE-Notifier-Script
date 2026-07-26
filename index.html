@@ -60,6 +60,23 @@
         .calendar-day-cell:hover {
             background-color: #f1f5f9;
         }
+        .fab-add-task {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 60;
+        }
+        .modal-overlay {
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(2px);
+        }
+        .modal-enter {
+            animation: modalPop .18s ease-out;
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: translateY(8px) scale(.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
@@ -102,9 +119,14 @@
                     <p id="last-updated-text" class="text-xs text-slate-500">อัปเดตล่าสุด: กำลังโหลดข้อมูล...</p>
                 </div>
             </div>
-            <button onclick="loadCalendarData()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
-                <i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล
-            </button>
+            <div class="flex items-center gap-2">
+                <button onclick="openAddTaskModal()" class="bg-psu-blue hover:bg-blue-900 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
+                    <i class="fa-solid fa-plus"></i> เพิ่มงานใหม่
+                </button>
+                <button onclick="loadCalendarData()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
+                    <i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล
+                </button>
+            </div>
         </div>
 
         <!-- Main Grid Layout -->
@@ -292,10 +314,68 @@
         </div>
     </footer>
 
+    <!-- Floating Action Button: Add Task -->
+    <button onclick="openAddTaskModal()" title="เพิ่มงานใหม่" class="fab-add-task w-14 h-14 rounded-full bg-psu-blue hover:bg-blue-900 text-white shadow-xl flex items-center justify-center text-2xl transition active:scale-90">
+        <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="fixed inset-0 z-[100] hidden items-center justify-center modal-overlay p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md modal-enter overflow-hidden">
+            <div class="bg-psu-blue text-white px-5 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-psu-gold"></i>
+                    <h3 class="font-bold text-sm">เพิ่มงานใหม่</h3>
+                </div>
+                <button onclick="closeAddTaskModal()" class="text-white/80 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">ชื่องาน / รายวิชา</label>
+                    <input id="input-task-title" type="text" placeholder="เช่น ส่งรายงานวิชา Data Structure บทที่ 3" 
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-psu-blue/40 focus:border-psu-blue" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">วันที่กำหนดส่ง</label>
+                        <input id="input-task-date" type="date" 
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-psu-blue/40 focus:border-psu-blue" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">เวลา</label>
+                        <input id="input-task-time" type="time" value="23:59"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-psu-blue/40 focus:border-psu-blue" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">รายละเอียดเพิ่มเติม (ถ้ามี)</label>
+                    <textarea id="input-task-desc" rows="2" placeholder="รายละเอียดงาน..."
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-psu-blue/40 focus:border-psu-blue resize-none"></textarea>
+                </div>
+                <label class="flex items-center gap-2 text-xs text-slate-600 cursor-pointer select-none">
+                    <input id="input-task-notify" type="checkbox" checked class="w-4 h-4 rounded border-slate-300 text-psu-blue focus:ring-psu-blue/40" />
+                    แจ้งเตือนเข้า LINE ทันทีที่เพิ่มงานนี้
+                </label>
+                <p id="add-task-error" class="text-xs text-rose-600 hidden"></p>
+            </div>
+            <div class="px-5 pb-5 flex items-center gap-3">
+                <button onclick="closeAddTaskModal()" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition">
+                    ยกเลิก
+                </button>
+                <button onclick="saveNewTask()" class="flex-1 px-4 py-2.5 rounded-xl bg-psu-blue hover:bg-blue-900 text-white text-sm font-semibold transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check"></i> บันทึกงาน
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==================== CONFIGURATION ====================
         const REPO_OWNER = '058Chayananeiei';
         const REPO_NAME = 'PSU-LMS-LINE-Notifier-Script';
+        const MANUAL_TASKS_KEY = 'psu_lms_manual_tasks';
 
         let fetchedEvents = [];
         let currentDisplayDate = new Date();
@@ -315,6 +395,191 @@
         // บันทึก ID งานที่เสร็จแล้วลง localStorage
         function saveCompletedTaskIds(completedIds) {
             localStorage.setItem('psu_lms_completed_tasks', JSON.stringify(completedIds));
+        }
+
+        // ==================== งานที่เพิ่มเองด้วยมือ (Manual Tasks) ====================
+        // โหลดรายการงานที่ผู้ใช้เพิ่มเองจาก localStorage
+        function getManualTasks() {
+            try {
+                return JSON.parse(localStorage.getItem(MANUAL_TASKS_KEY)) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        // บันทึกรายการงานที่ผู้ใช้เพิ่มเองลง localStorage (เก็บเป็น string date เพื่อ serialize ได้)
+        function saveManualTasks(list) {
+            const serializable = list.map(t => ({
+                id: t.id,
+                title: t.title,
+                due: t.due_date.toISOString(),
+                description: t.description || "",
+                manual: true
+            }));
+            localStorage.setItem(MANUAL_TASKS_KEY, JSON.stringify(serializable));
+        }
+
+        // เปิด Modal เพิ่มงานใหม่
+        function openAddTaskModal() {
+            document.getElementById('add-task-modal').classList.remove('hidden');
+            document.getElementById('add-task-modal').classList.add('flex');
+            document.getElementById('input-task-title').value = '';
+            document.getElementById('input-task-desc').value = '';
+            document.getElementById('input-task-notify').checked = true;
+            document.getElementById('add-task-error').classList.add('hidden');
+
+            // ค่าเริ่มต้น: วันนี้
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('input-task-date').value = `${yyyy}-${mm}-${dd}`;
+            document.getElementById('input-task-time').value = '23:59';
+
+            setTimeout(() => document.getElementById('input-task-title').focus(), 50);
+        }
+
+        // ปิด Modal เพิ่มงานใหม่
+        function closeAddTaskModal() {
+            document.getElementById('add-task-modal').classList.add('hidden');
+            document.getElementById('add-task-modal').classList.remove('flex');
+        }
+
+        // บันทึกงานใหม่ที่ผู้ใช้กรอก
+        function saveNewTask() {
+            const titleInput = document.getElementById('input-task-title');
+            const dateInput = document.getElementById('input-task-date');
+            const timeInput = document.getElementById('input-task-time');
+            const descInput = document.getElementById('input-task-desc');
+            const errorBox = document.getElementById('add-task-error');
+
+            const title = titleInput.value.trim();
+            const dateVal = dateInput.value;
+            const timeVal = timeInput.value || '23:59';
+
+            if (!title) {
+                errorBox.innerText = "⚠️ กรุณากรอกชื่องาน";
+                errorBox.classList.remove('hidden');
+                titleInput.focus();
+                return;
+            }
+            if (!dateVal) {
+                errorBox.innerText = "⚠️ กรุณาเลือกวันที่กำหนดส่ง";
+                errorBox.classList.remove('hidden');
+                dateInput.focus();
+                return;
+            }
+            errorBox.classList.add('hidden');
+
+            const dueDate = new Date(`${dateVal}T${timeVal}:00`);
+            if (isNaN(dueDate.getTime())) {
+                errorBox.innerText = "⚠️ วันที่ไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง";
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            const newTask = {
+                id: `manual-${Date.now()}`,
+                title: title,
+                due_date: dueDate,
+                description: descInput.value.trim(),
+                completed: false,
+                manual: true
+            };
+
+            fetchedEvents.push(newTask);
+            fetchedEvents.sort((a, b) => a.due_date - b.due_date);
+
+            // เก็บลง localStorage เพื่อให้อยู่ถาวรแม้รีเฟรชหน้า
+            const manualList = getManualTasks();
+            manualList.push(newTask);
+            saveManualTasks(manualList);
+
+            renderDashboard();
+            closeAddTaskModal();
+
+            // ส่งแจ้งเตือนเข้า LINE ทันที (ถ้าติ๊กเลือกไว้)
+            if (document.getElementById('input-task-notify').checked) {
+                sendLineTaskAddedNotification(newTask.title, newTask.due_date, newTask.description);
+            }
+        }
+
+        // ปุ่มสำหรับรีเซ็ตหรือใส่นิพจน์ PAT ใหม่ด้วยตัวเอง
+        function resetGithubPat() {
+            const newPat = prompt("🔑 ใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อใช้ส่งแจ้งเตือนเข้า LINE:");
+            if (newPat && newPat.trim()) {
+                localStorage.setItem('psu_github_pat', newPat.trim());
+                alert("✅ บันทึก GitHub PAT สำเร็จเรียบร้อย!");
+            }
+        }
+
+        // ฟังก์ชันกลาง: ขอ PAT จาก localStorage หรือถามผู้ใช้ถ้ายังไม่มี
+        function getOrPromptGithubPat() {
+            let pat = localStorage.getItem('psu_github_pat');
+            if (!pat) {
+                pat = prompt("🔑 โปรดใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อส่งแจ้งเตือนเข้า LINE (กรอกครั้งแรกครั้งเดียว):");
+                if (pat && pat.trim()) {
+                    pat = pat.trim();
+                    localStorage.setItem('psu_github_pat', pat);
+                } else {
+                    return null;
+                }
+            }
+            return pat;
+        }
+
+        // ฟังก์ชันกลาง: ยิง repository_dispatch event ไปยัง GitHub Actions
+        async function dispatchGithubEvent(eventType, payload) {
+            const pat = getOrPromptGithubPat();
+            if (!pat) {
+                console.warn("ไม่ได้ใส่ PAT ข้ามการส่งแจ้งเตือนเข้า LINE");
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/vnd.github+json',
+                        'Authorization': `Bearer ${pat}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        event_type: eventType,
+                        client_payload: payload
+                    })
+                });
+
+                if (response.ok) {
+                    console.log(`✅ ส่งสัญญาณ "${eventType}" เข้า GitHub Actions สำเร็จ!`);
+                } else if (response.status === 401) {
+                    alert("❌ Token ไม่ถูกต้องหรือหมดอายุ โปรดลองใส่อีกครั้ง");
+                    localStorage.removeItem('psu_github_pat');
+                } else {
+                    console.error('❌ ไม่สามารถส่งสัญญาณไปยัง GitHub Actions ได้ Status:', response.status);
+                }
+            } catch (error) {
+                console.error('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ GitHub API:', error);
+            }
+        }
+
+        // ฟังก์ชันส่งสัญญาณเข้า GitHub Actions เพื่อยิง LINE Notify เมื่อทำงานเสร็จ
+        async function sendLineTaskDoneNotification(taskTitle) {
+            await dispatchGithubEvent('task_completed', { task_title: taskTitle });
+        }
+
+        // ฟังก์ชันส่งสัญญาณเข้า GitHub Actions เพื่อยิง LINE Notify เมื่อเพิ่มงานใหม่
+        async function sendLineTaskAddedNotification(taskTitle, dueDate, description) {
+            const dueDateFormatted = dueDate.toLocaleDateString('th-TH', {
+                day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            }) + ' น.';
+
+            await dispatchGithubEvent('task_added', {
+                task_title: taskTitle,
+                due_date: dueDateFormatted,
+                due_date_iso: dueDate.toISOString(),
+                description: description || ""
+            });
         }
 
         // สลับสถานะการเสร็จสิ้นของงาน (Toggle Completed State)
@@ -346,59 +611,6 @@
             }
         }
 
-        // ปุ่มสำหรับรีเซ็ตหรือใส่นิพจน์ PAT ใหม่ด้วยตัวเอง
-        function resetGithubPat() {
-            const newPat = prompt("🔑 ใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อใช้ส่งแจ้งเตือนเข้า LINE:");
-            if (newPat && newPat.trim()) {
-                localStorage.setItem('psu_github_pat', newPat.trim());
-                alert("✅ บันทึก GitHub PAT สำเร็จเรียบร้อย!");
-            }
-        }
-
-        // ฟังก์ชันส่งสัญญาณเข้า GitHub Actions เพื่อยิง LINE Notify
-        async function sendLineTaskDoneNotification(taskTitle) {
-            let pat = localStorage.getItem('psu_github_pat');
-            
-            if (!pat) {
-                pat = prompt("🔑 โปรดใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อส่งแจ้งเตือนเข้า LINE (กรอกครั้งแรกครั้งเดียว):");
-                if (pat && pat.trim()) {
-                    pat = pat.trim();
-                    localStorage.setItem('psu_github_pat', pat);
-                } else {
-                    console.warn("ไม่ได้ใส่ PAT ข้ามการส่งแจ้งเตือนเข้า LINE");
-                    return;
-                }
-            }
-
-            try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/vnd.github+json',
-                        'Authorization': `Bearer ${pat}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        event_type: 'task_completed',
-                        client_payload: {
-                            task_title: taskTitle
-                        }
-                    })
-                });
-
-                if (response.ok) {
-                    console.log('✅ ส่งสัญญาณแจ้งเตือนทำเสร็จแล้วเข้า GitHub Actions สำเร็จ!');
-                } else if (response.status === 401) {
-                    alert("❌ Token ไม่ถูกต้องหรือหมดอายุ โปรดลองใส่อีกครั้ง");
-                    localStorage.removeItem('psu_github_pat');
-                } else {
-                    console.error('❌ ไม่สามารถส่งสัญญาณไปยัง GitHub Actions ได้ Status:', response.status);
-                }
-            } catch (error) {
-                console.error('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ GitHub API:', error);
-            }
-        }
-
         window.onload = function() {
             loadCalendarData();
         };
@@ -407,6 +619,31 @@
             const now = new Date();
             const graceMs = 2 * 60 * 60 * 1000; // 2 ชั่วโมง
             return events.filter(e => e.due_date && (e.due_date.getTime() >= (now.getTime() - graceMs)));
+        }
+
+        // รวมงานที่ผู้ใช้เพิ่มเอง (manual) เข้ากับงานที่ดึงมาจาก data.json / iCal
+        function mergeManualTasks(list) {
+            const completedIds = getCompletedTaskIds();
+            const manualRaw = getManualTasks();
+            const manualParsed = manualRaw.map(t => ({
+                id: t.id,
+                title: t.title,
+                due_date: new Date(t.due),
+                description: t.description || "",
+                manual: true,
+                completed: completedIds.includes(t.id)
+            }));
+
+            // ป้องกันข้อมูลซ้ำ (เผื่อ id ชนกัน)
+            const existingIds = new Set(list.map(e => e.id));
+            manualParsed.forEach(m => {
+                if (!existingIds.has(m.id)) {
+                    list.push(m);
+                }
+            });
+
+            list.sort((a, b) => a.due_date - b.due_date);
+            return list;
         }
 
         async function loadCalendarData() {
@@ -433,7 +670,7 @@
                         };
                     });
 
-                    fetchedEvents = filterExpiredEvents(parsedList);
+                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parsedList));
                     document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
                 } else {
                     throw new Error("data.json not found");
@@ -457,13 +694,15 @@
                 const res = await fetch(proxyUrl);
                 if (res.ok) {
                     const text = await res.text();
-                    fetchedEvents = filterExpiredEvents(parseICal(text));
+                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parseICal(text)));
                     document.getElementById('last-updated-text').innerText = `อัปเดตสดจาก PSU LMS ผ่าน Proxy (ตรง 100%)`;
                 } else {
+                    fetchedEvents = filterExpiredEvents(mergeManualTasks([]));
                     document.getElementById('last-updated-text').innerText = `กรุณาเปิดสิทธิ์ GitHub Actions เพื่อสร้าง data.json`;
                 }
             } catch (e) {
                 console.error("Direct fetch failed", e);
+                fetchedEvents = filterExpiredEvents(mergeManualTasks([]));
                 document.getElementById('last-updated-text').innerText = `ยังไม่พบไฟล์ data.json กรุณากด Run workflow บน GitHub`;
             }
         }
@@ -752,6 +991,10 @@
                     ? "line-through text-slate-400 font-normal" 
                     : "text-slate-800 font-bold";
 
+                const manualBadge = item.manual 
+                    ? `<span class="inline-block px-1.5 py-0.5 rounded bg-blue-50 text-psu-blue text-[9px] font-semibold border border-blue-100 ml-1"><i class="fa-solid fa-pen"></i> เพิ่มเอง</span>` 
+                    : '';
+
                 html += `
                     <div class="p-3.5 ${cardStyle} rounded-xl border transition flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-start gap-3 flex-grow">
@@ -764,9 +1007,11 @@
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="font-bold text-slate-400 text-xs">#${index + 1}</span>
                                     <h4 class="${titleStyle} text-sm">${item.title}</h4>
+                                    ${manualBadge}
                                 </div>
                                 <div class="text-xs text-slate-500 space-y-0.5">
                                     <p><i class="fa-regular fa-calendar-check text-slate-400 w-4"></i> กำหนดส่ง: <span class="font-medium text-slate-700">${dateFormatted}</span></p>
+                                    ${item.description ? `<p class="text-slate-400 italic">${item.description}</p>` : ''}
                                 </div>
                             </div>
                         </div>
