@@ -1,12 +1,7 @@
 {
-  "last_updated": "28/07/2026 22:57:37",
-  "total_tasks": 32,
+  "last_updated": "29/07/2026 00:22:55",
+  "total_tasks": 31,
   "events": [
-    {
-      "title": "Post-test_05 closes",
-      "due_date": "2026-07-29T00:01:00",
-      "description": "Post-test_05 [1]\n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/quiz/view.php?id=51922\n"
-    },
     {
       "title": "Quiz เนื้อหาบทที่ 1-3  (Sect 05) closes",
       "due_date": "2026-07-29T16:00:00",
