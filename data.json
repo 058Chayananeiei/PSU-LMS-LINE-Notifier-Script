@@ -1,32 +1,7 @@
 {
-  "last_updated": "31/07/2026 22:52:58",
-  "total_tasks": 27,
+  "last_updated": "01/08/2026 00:16:53",
+  "total_tasks": 22,
   "events": [
-    {
-      "title": "(Unit 1) Part 1: Grammar closes",
-      "due_date": "2026-07-31T23:59:00",
-      "description": ""
-    },
-    {
-      "title": "(Unit 1) Part 2: Vocabulary closes",
-      "due_date": "2026-07-31T23:59:00",
-      "description": ""
-    },
-    {
-      "title": "(Unit 1) Part 3: Expressions closes",
-      "due_date": "2026-07-31T23:59:00",
-      "description": ""
-    },
-    {
-      "title": "(Unit 1) Part 4: Writing closes",
-      "due_date": "2026-07-31T23:59:00",
-      "description": ""
-    },
-    {
-      "title": "(Unit 1) Part 5: Listening closes",
-      "due_date": "2026-07-31T23:59:00",
-      "description": ""
-    },
     {
       "title": "Lab 6 Information design is due",
       "due_date": "2026-08-02T23:59:00",
