@@ -1,6 +1,6 @@
 {
-  "last_updated": "01/08/2026 15:00:19",
-  "total_tasks": 22,
+  "last_updated": "01/08/2026 18:09:31",
+  "total_tasks": 23,
   "events": [
     {
       "title": "Lab 6 Information design is due",
@@ -110,6 +110,11 @@
     {
       "title": "Quiz เนื้อหาบทที่ 6 BMC (Sect 05) closes",
       "due_date": "2026-09-24T16:00:00",
+      "description": ""
+    },
+    {
+      "title": "แบบลงชื่อเข้าเรียนและส่งงานคาบ 11-13 should be completed",
+      "due_date": "2026-09-30T16:00:00",
       "description": ""
     }
   ]
