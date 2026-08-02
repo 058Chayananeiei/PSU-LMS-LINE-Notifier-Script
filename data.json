@@ -1,12 +1,7 @@
 {
-  "last_updated": "02/08/2026 23:44:28",
-  "total_tasks": 23,
+  "last_updated": "03/08/2026 01:52:15",
+  "total_tasks": 22,
   "events": [
-    {
-      "title": "Lab 6 Information design is due",
-      "due_date": "2026-08-02T23:59:00",
-      "description": "กำหนดส่งภายในเวลา 23:59 น. วันอาทิตย์ที่ 2 สิงหาคม พ.ศ.2569\n"
-    },
     {
       "title": "Assingment: BMI calculation (2 objects) of Student class is due",
       "due_date": "2026-08-03T23:59:00",
