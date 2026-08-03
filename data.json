@@ -1,17 +1,7 @@
 {
-  "last_updated": "03/08/2026 23:13:37",
-  "total_tasks": 22,
+  "last_updated": "04/08/2026 02:16:31",
+  "total_tasks": 20,
   "events": [
-    {
-      "title": "Assingment: BMI calculation (2 objects) of Student class is due",
-      "due_date": "2026-08-03T23:59:00",
-      "description": "https://drive.google.com/drive/folders/1BUOki0LnSjMCQy3xS3wsZVxvACZL54bN [1]\n\nDirection:\n\n\t* Create at least 2 objects\n\t* Calculate BMI for the first object by itself\n\t* Calculate the second object's BMI by the first object\n\nSubmission:\n\n\t* Captured entire screens for compile step and program demonstration.\n\t* Source code files in beautiful indent style format\n\t* Class diagram (only logic classes) => export JPG/PNG, high resolution, portrait layout.\n\t* ส่งรายบุคคล\n\n \n\nLinks:\n------\n[1] https://drive.google.com/drive/folders/1BUOki0LnSjMCQy3xS3wsZVxvACZL54bN\n"
-    },
-    {
-      "title": "Post-test_06 closes",
-      "due_date": "2026-08-04T00:00:00",
-      "description": "Post-test_06 [1]\n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/quiz/view.php?id=54780\n"
-    },
     {
       "title": "ส่งรูปถ่ายของตนเองเพื่อเช็คชื่อ is due",
       "due_date": "2026-08-04T17:00:00",
