@@ -1,6 +1,6 @@
 {
-  "last_updated": "04/08/2026 11:53:08",
-  "total_tasks": 20,
+  "last_updated": "04/08/2026 15:15:39",
+  "total_tasks": 21,
   "events": [
     {
       "title": "ส่งรูปถ่ายของตนเองเพื่อเช็คชื่อ is due",
@@ -21,6 +21,11 @@
       "title": "Lab 7 Interaction design is due",
       "due_date": "2026-08-09T23:59:00",
       "description": "กำหนดส่งภายในเวลา 23:59 น. วันอาทิตย์ที่ 9 สิงหาคม พ.ศ.2569\n"
+    },
+    {
+      "title": "Workshop: GPA calculation in OOP is due",
+      "due_date": "2026-08-10T23:59:00",
+      "description": "Workshop: GPA calculation in OOP\n\n\t* งานกลุ่ม ไม่เกิน 4 คน\n\t* Source code files \n\t* Class diagram and export to PNG\n\t* Contributions (การมีส่วนร่วมในการทำงาน) (ไม่เกิน 1 หน้า A4) ระบุสมาชิกในกลุ่ม และภาระของแต่ละคน\n\t* Captured screens of program outputs ของใครของมัน\n\t* งานกลุ่ม แต่ให้ฝึกงานรันโปรแกรมทุกคน และให้ส่งเป็นรายบุคคล ชื่อไฟล์ให้ตั้งชื่อเป็นรหัสของตนเองเป็นอันดันแรกแล้วตามด้วยสมาชิกในกลุ่มทุกคน เช่น เจ้าตัวมีรหัสคือ 414 ก็ต้องตั้งชื่อไฟล์ว่า คือ 414_417_528_560.zip\n\n"
     },
     {
       "title": "Quiz เนื้อหาบทที่ 4-5 (Sect 05) opens",
