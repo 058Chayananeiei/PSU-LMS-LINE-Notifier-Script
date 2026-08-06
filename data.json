@@ -1,5 +1,5 @@
 {
-  "last_updated": "06/08/2026 15:12:49",
+  "last_updated": "06/08/2026 18:55:57",
   "total_tasks": 20,
   "events": [
     {
@@ -28,18 +28,18 @@
       "description": ""
     },
     {
+      "title": "Quiz เนื้อหาบทที่ 4-5 (Sect 05) closes",
+      "due_date": "2026-08-19T16:00:00",
+      "description": ""
+    },
+    {
       "title": "***ส่ง CLASSWORK 1 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
-      "due_date": "2026-08-16T23:59:00",
+      "due_date": "2026-08-28T23:59:00",
       "description": ""
     },
     {
       "title": "***ส่ง CLASSWORK 2 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
-      "due_date": "2026-08-16T23:59:00",
-      "description": ""
-    },
-    {
-      "title": "Quiz เนื้อหาบทที่ 4-5 (Sect 05) closes",
-      "due_date": "2026-08-19T16:00:00",
+      "due_date": "2026-08-28T23:59:00",
       "description": ""
     },
     {
