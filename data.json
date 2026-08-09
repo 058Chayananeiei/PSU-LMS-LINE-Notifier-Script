@@ -1,12 +1,7 @@
 {
-  "last_updated": "09/08/2026 23:20:21",
-  "total_tasks": 21,
+  "last_updated": "10/08/2026 01:22:38",
+  "total_tasks": 20,
   "events": [
-    {
-      "title": "Lab 7 Interaction design is due",
-      "due_date": "2026-08-09T23:59:00",
-      "description": "กำหนดส่งภายในเวลา 23:59 น. วันอาทิตย์ที่ 9 สิงหาคม พ.ศ.2569\n"
-    },
     {
       "title": "Workshop: GPA calculation in OOP is due",
       "due_date": "2026-08-10T23:59:00",
