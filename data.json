@@ -1,12 +1,7 @@
 {
-  "last_updated": "10/08/2026 23:41:22",
-  "total_tasks": 20,
+  "last_updated": "11/08/2026 01:40:21",
+  "total_tasks": 23,
   "events": [
-    {
-      "title": "Workshop: GPA calculation in OOP is due",
-      "due_date": "2026-08-10T23:59:00",
-      "description": "Workshop: GPA calculation in OOP\n\n\t* งานกลุ่ม ไม่เกิน 4 คน\n\t* Source code files \n\t* Class diagram and export to PNG\n\t* Contributions (การมีส่วนร่วมในการทำงาน) (ไม่เกิน 1 หน้า A4) ระบุสมาชิกในกลุ่ม และภาระของแต่ละคน\n\t* Captured screens of program outputs ของใครของมัน\n\t* งานกลุ่ม แต่ให้ฝึกงานรันโปรแกรมทุกคน และให้ส่งเป็นรายบุคคล ชื่อไฟล์ให้ตั้งชื่อเป็นรหัสของตนเองเป็นอันดันแรกแล้วตามด้วยสมาชิกในกลุ่มทุกคน เช่น เจ้าตัวมีรหัสคือ 414 ก็ต้องตั้งชื่อไฟล์ว่า คือ 414_417_528_560.zip\n\n"
-    },
     {
       "title": "Upload certificate course mixed reality is due",
       "due_date": "2026-08-13T00:00:00",
@@ -101,6 +96,26 @@
       "title": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 (Questionnaire Opens)",
       "due_date": "2026-10-08T09:00:00",
       "description": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 [1]\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/questionnaire/view.php?id=633220\n"
+    },
+    {
+      "title": "(Unit 3) Part 1: Vocabulary closes",
+      "due_date": "2026-10-09T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "(Unit 3) Part 2: Grammar closes",
+      "due_date": "2026-10-09T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "(Unit 3) Part 3: Listening closes",
+      "due_date": "2026-10-09T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "(Unit 3) Part 4: Reading closes",
+      "due_date": "2026-10-09T23:59:00",
+      "description": ""
     }
   ]
 }
