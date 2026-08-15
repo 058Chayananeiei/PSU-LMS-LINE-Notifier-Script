@@ -1,6 +1,6 @@
 {
-  "last_updated": "15/08/2026 13:18:25",
-  "total_tasks": 22,
+  "last_updated": "15/08/2026 15:13:45",
+  "total_tasks": 20,
   "events": [
     {
       "title": "Note Submission is due",
@@ -25,11 +25,6 @@
     {
       "title": "***ส่ง CLASSWORK 2 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
       "due_date": "2026-08-28T23:59:00",
-      "description": ""
-    },
-    {
-      "title": "Quiz คาบ 8 should be completed",
-      "due_date": "2026-08-30T16:00:00",
       "description": ""
     },
     {
@@ -80,11 +75,6 @@
     {
       "title": "Quiz เนื้อหาบทที่ 6 BMC (Sect 05) closes",
       "due_date": "2026-09-24T16:00:00",
-      "description": ""
-    },
-    {
-      "title": "แบบลงชื่อเข้าเรียนและส่งงานคาบ 11-13 should be completed",
-      "due_date": "2026-09-30T16:00:00",
       "description": ""
     },
     {
