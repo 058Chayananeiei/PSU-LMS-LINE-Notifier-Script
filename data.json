@@ -1,32 +1,7 @@
 {
-  "last_updated": "21/08/2026 13:24:47",
-  "total_tasks": 23,
+  "last_updated": "21/08/2026 15:25:07",
+  "total_tasks": 18,
   "events": [
-    {
-      "title": "Submission_Question 1: Draw the context diagram (10 marks) is due",
-      "due_date": "2026-08-21T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 2: Draw the Current Physical Data Flow Diagram Level 1 (15 marks) is due",
-      "due_date": "2026-08-21T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 3: Draw the Current Logical Data Flow Diagram Level 1 (15 marks) is due",
-      "due_date": "2026-08-21T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 4: Draw the New Logical Data Flow Diagram Level 1 (30 marks) is due",
-      "due_date": "2026-08-21T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 5: Draw the New Physical Data Flow Diagram Level 1 (30 marks) is due",
-      "due_date": "2026-08-21T15:00:00",
-      "description": ""
-    },
     {
       "title": "***ส่ง CLASSWORK 1 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
       "due_date": "2026-08-28T23:59:00",
