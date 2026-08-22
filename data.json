@@ -1,6 +1,6 @@
 {
-  "last_updated": "22/08/2026 11:20:53",
-  "total_tasks": 18,
+  "last_updated": "22/08/2026 13:19:30",
+  "total_tasks": 20,
   "events": [
     {
       "title": "***ส่ง CLASSWORK 1 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
@@ -10,6 +10,16 @@
     {
       "title": "***ส่ง CLASSWORK 2 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
       "due_date": "2026-08-28T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "Note Submission is due",
+      "due_date": "2026-08-29T00:00:00",
+      "description": ""
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-08-29T00:00:00",
       "description": ""
     },
     {
