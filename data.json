@@ -1,6 +1,6 @@
 {
-  "last_updated": "22/08/2026 13:19:30",
-  "total_tasks": 20,
+  "last_updated": "22/08/2026 15:15:26",
+  "total_tasks": 21,
   "events": [
     {
       "title": "***ส่ง CLASSWORK 1 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
@@ -21,6 +21,11 @@
       "title": "Lab Submission is due",
       "due_date": "2026-08-29T00:00:00",
       "description": ""
+    },
+    {
+      "title": "Lab 8 Form design is due",
+      "due_date": "2026-08-30T23:59:00",
+      "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 30 สิงหาคม พ.ศ.2569\n"
     },
     {
       "title": "(Unit 3) Part 1: Vocabulary opens",
