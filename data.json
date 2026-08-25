@@ -1,6 +1,6 @@
 {
-  "last_updated": "25/08/2026 15:28:35",
-  "total_tasks": 36,
+  "last_updated": "25/08/2026 17:20:29",
+  "total_tasks": 37,
   "events": [
     {
       "title": "คะแนนสอบกลางภาค is due",
@@ -81,6 +81,11 @@
       "title": "(Unit 3) Part 4: Reading opens",
       "due_date": "2026-09-07T08:00:00",
       "description": ""
+    },
+    {
+      "title": "Assigment: Complete demo of circle (3 methods) is due",
+      "due_date": "2026-09-07T23:59:00",
+      "description": "// C5.CALDIAMETER(); // 2 * RADIUS; AND REMEMBER\n\n// C5.CALCIRCUMFERENCE(); // 2 * MATH.PI * RADIUS, AND REMEMBER// C5.PROOFMYPI();\n\n// MYPI = CIRCUMFERENCE/DIAMETER; AND REMEMBER\n\n"
     },
     {
       "title": "งานที่ 3 - อธิบายภาพรวมของบทความวิจัย is due",
