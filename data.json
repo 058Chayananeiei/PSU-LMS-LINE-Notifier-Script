@@ -1,6 +1,6 @@
 {
-  "last_updated": "26/08/2026 09:55:34",
-  "total_tasks": 37,
+  "last_updated": "26/08/2026 11:28:58",
+  "total_tasks": 41,
   "events": [
     {
       "title": "คะแนนสอบกลางภาค is due",
@@ -35,6 +35,16 @@
     {
       "title": "Pre-Test_11 opens",
       "due_date": "2026-09-01T15:14:00",
+      "description": ""
+    },
+    {
+      "title": "Note Submission is due",
+      "due_date": "2026-09-02T00:00:00",
+      "description": ""
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-09-02T00:00:00",
       "description": ""
     },
     {
@@ -158,9 +168,19 @@
       "description": "นักศึกษาที่ประสงค์จะส่งการบ้านใหม่ ให้ดำเนินการดังนี้\n\n\t* จัดส่งเป็นไฟล์ PDF \n\t* ตั้งชื่อไฟล์เป็น รหัสนักศึกษา_ชื่อไฟล์แบบฝึกหัดหรือการบ้าน_resubmit เช่น 6310210000_Ex04_resubmit.pdf\n\t* 1 ไฟล์ 1 แบบฝึกหัด\n\t* นักศึกษาสามารถส่งได้มากกว่า 1 ไฟล์ เช่น นักศึกษาต้องการส่ง Ex03 และ Ex04 ใหม่ ให้ส่งแยกเป็น 2 ไฟล์ คือ 6310210000_Ex03_resubmit.pdf และ 6310210000_Ex04_resubmit.pdf ในกล่องนี้ สูงสุดไม่เกิน 20 ไฟล์\n\n"
     },
     {
+      "title": "Quiz บทที่ 7 (Sect 05) opens",
+      "due_date": "2026-10-05T09:00:00",
+      "description": ""
+    },
+    {
       "title": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 (Questionnaire Opens)",
       "due_date": "2026-10-08T09:00:00",
       "description": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 [1]\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/questionnaire/view.php?id=633220\n"
+    },
+    {
+      "title": "Quiz บทที่ 7 (Sect 05) closes",
+      "due_date": "2026-10-08T16:00:00",
+      "description": ""
     },
     {
       "title": "(Unit 3) Part 1: Vocabulary closes",
