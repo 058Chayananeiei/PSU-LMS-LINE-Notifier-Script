@@ -924,17 +924,26 @@
             let loadedSuccess = false;
 
             try {
-                const response = await fetch('./data.json?t=' + new Date().getTime());
+                const response = await fetch('./data.json?t=' + new Date().getTime(), { cache: 'no-store' });
                 if (response.ok) {
                     const data = await response.json();
                     const rawList = data.tasks || data.events || [];
                     
                     const parsedList = rawList.map((e, index) => {
                         const taskId = e.id || e.summary || e.title || `task-${index}`;
+                        const rawDue = e.due || e.due_date;
+                        let dateObj = null;
+                        if (rawDue) {
+                            const sanitizedDue = typeof rawDue === 'string' ? rawDue.replace(' ', 'T') : rawDue;
+                            dateObj = new Date(sanitizedDue);
+                        }
+                        if (!dateObj || isNaN(dateObj.getTime())) {
+                            dateObj = new Date();
+                        }
                         return {
                             id: taskId,
                             title: e.title || e.summary,
-                            due_date: new Date(e.due || e.due_date),
+                            due_date: dateObj,
                             description: e.description || "",
                             completed: completedIds.includes(taskId)
                         };
@@ -1089,66 +1098,6 @@
             return list;
         }
 
-        async function loadCalendarData() {
-            const btnReload = document.getElementById('btn-reload');
-            btnReload.disabled = true;
-            btnReload.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังโหลด...`;
-
-            const completedIds = getCompletedTaskIds();
-
-            try {
-                const response = await fetch('./data.json?t=' + new Date().getTime());
-                if (response.ok) {
-                    const data = await response.json();
-                    const rawList = data.tasks || data.events || [];
-                    
-                    const parsedList = rawList.map((e, index) => {
-                        const taskId = e.id || e.summary || e.title || `task-${index}`;
-                        return {
-                            id: taskId,
-                            title: e.title || e.summary,
-                            due_date: new Date(e.due || e.due_date),
-                            description: e.description || "",
-                            completed: completedIds.includes(taskId)
-                        };
-                    });
-
-                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parsedList));
-                    document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
-                } else {
-                    throw new Error("data.json not found");
-                }
-            } catch (err) {
-                console.warn("Could not load data.json, falling back to direct iCal fetch:", err);
-                await fetchDirectiCal();
-            }
-
-            renderDashboard();
-
-            btnReload.disabled = false;
-            btnReload.innerHTML = `<i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล`;
-        }
-
-        async function fetchDirectiCal() {
-            const defaultIcalUrl = "https://lms.psu.ac.th/calendar/export_execute.php?userid=56828&authtoken=3463a3bce6ca9586ecb1a5abf0d4757ebf314808&preset_what=all&preset_time=recentupcoming";
-            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(defaultIcalUrl);
-
-            try {
-                const res = await fetch(proxyUrl);
-                if (res.ok) {
-                    const text = await res.text();
-                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parseICal(text)));
-                    document.getElementById('last-updated-text').innerText = `อัปเดตสดจาก PSU LMS ผ่าน Proxy (ตรง 100%)`;
-                } else {
-                    fetchedEvents = filterExpiredEvents(mergeManualTasks([]));
-                    document.getElementById('last-updated-text').innerText = `กรุณาเปิดสิทธิ์ GitHub Actions เพื่อสร้าง data.json`;
-                }
-            } catch (e) {
-                console.error("Direct fetch failed", e);
-                fetchedEvents = filterExpiredEvents(mergeManualTasks([]));
-                document.getElementById('last-updated-text').innerText = `ยังไม่พบไฟล์ data.json กรุณากด Run workflow บน GitHub`;
-            }
-        }
 
         function parseICal(icalText) {
             const events = [];
