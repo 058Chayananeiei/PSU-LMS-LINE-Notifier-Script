@@ -323,7 +323,7 @@
                         <!-- LINE Bubble Mockup Container -->
                         <div class="bg-slate-950 p-4 rounded-2xl text-slate-900 line-bubble-shadow max-w-sm mx-auto border border-slate-800 overflow-hidden">
                             
-                            <!-- CARD 1: URGENT FLEX CARD (With Progress Bar Gimmick & Dual Buttons) -->
+                            <!-- CARD 1: URGENT FLEX CARD -->
                             <div id="flex-card-urgent-view" class="block">
                                 <div class="bg-[#DC2626] text-white p-3.5 rounded-t-xl">
                                     <div class="flex items-center justify-between">
@@ -349,10 +349,10 @@
                                     </div>
                                 </div>
                                 <div class="bg-slate-50 p-3 rounded-b-xl border-t border-slate-100 flex gap-2">
-                                    <button onclick="showToast('🔗 กำลังเชื่อมต่อไปยังระบบ PSU LMS...', 'info')" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-1.5 rounded-lg text-xs transition">
+                                    <button onclick="showToast('🔗 กำลังเชื่อมต่อไปยังระบบ PSU LMS...', 'info'); setTimeout(() => window.open('https://lms2.psu.ac.th', '_blank'), 500);" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-1.5 rounded-lg text-xs transition">
                                         ดูรายละเอียด
                                     </button>
-                                    <button onclick="showToast('🚀 กำลังไปยังหน้าส่งงานบน PSU LMS...', 'success')" class="flex-1 bg-[#DC2626] hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-xs transition shadow-sm">
+                                    <button onclick="showToast('🚀 กำลังไปยังหน้าส่งงานบน PSU LMS...', 'success'); setTimeout(() => window.open('https://lms2.psu.ac.th', '_blank'), 500);" class="flex-1 bg-[#DC2626] hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-xs transition shadow-sm">
                                         ส่งงานทันที 🚀
                                     </button>
                                 </div>
@@ -732,7 +732,12 @@
         // โหลดรายการงานที่ผู้ใช้เพิ่มเองจาก localStorage
         function getManualTasks() {
             try {
-                return JSON.parse(localStorage.getItem(MANUAL_TASKS_KEY)) || [];
+                const list = JSON.parse(localStorage.getItem(MANUAL_TASKS_KEY)) || [];
+                // แปลง string กลับเป็น Date object เพื่อให้ใช้งานต่อได้ไม่พัง
+                return list.map(t => ({
+                    ...t,
+                    due_date: new Date(t.due) 
+                }));
             } catch (e) {
                 return [];
             }
@@ -740,13 +745,17 @@
 
         // บันทึกรายการงานที่ผู้ใช้เพิ่มเองลง localStorage (เก็บเป็น string date เพื่อ serialize ได้)
         function saveManualTasks(list) {
-            const serializable = list.map(t => ({
-                id: t.id,
-                title: t.title,
-                due: t.due_date.toISOString(),
-                description: t.description || "",
-                manual: true
-            }));
+            const serializable = list.map(t => {
+                // เช็กให้ชัวร์ว่าเป็น Date object ก่อนเรียก toISOString()
+                const dateObj = t.due_date instanceof Date ? t.due_date : new Date(t.due || t.due_date);
+                return {
+                    id: t.id,
+                    title: t.title,
+                    due: dateObj.toISOString(),
+                    description: t.description || "",
+                    manual: true
+                };
+            });
             localStorage.setItem(MANUAL_TASKS_KEY, JSON.stringify(serializable));
         }
 
@@ -1644,8 +1653,8 @@
                 "footer": {
                     "type": "box", "layout": "horizontal", "spacing": "sm", "paddingAll": "md",
                     "contents": [
-                        { "type": "button", "style": "secondary", "height": "sm", "action": { "type": "uri", "label": "ดูรายละเอียด", "uri": "https://lms.psu.ac.th" }, "color": "#F1F5F9" },
-                        { "type": "button", "style": "primary", "height": "sm", "action": { "type": "uri", "label": "ส่งงานทันที 🚀", "uri": "https://lms.psu.ac.th" }, "color": "#DC2626" }
+                        { "type": "button", "style": "secondary", "height": "sm", "action": { "type": "uri", "label": "ดูรายละเอียด", "uri": "https://lms2.psu.ac.th" }, "color": "#F1F5F9" },
+                        { "type": "button", "style": "primary", "height": "sm", "action": { "type": "uri", "label": "ส่งงานทันที 🚀", "uri": "https://lms2.psu.ac.th" }, "color": "#DC2626" }
                     ]
                 }
             };
