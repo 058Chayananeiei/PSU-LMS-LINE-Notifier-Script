@@ -3,7 +3,7 @@ name: PSU LMS LINE Notifier & Data Sync
 on:
   schedule:
     # รันทุกๆ 2 ชั่วโมง (ตามเวลา UTC)
-    - cron: '0 */2 * * *'
+    - cron: '0 */5 * * *'
   
   # ปุ่มกดรันด้วยตัวเองผ่านหน้าเว็บ GitHub
   workflow_dispatch:
