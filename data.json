@@ -1,27 +1,7 @@
 {
-  "last_updated": "29/08/2026 11:37:31",
-  "total_tasks": 37,
+  "last_updated": "02/09/2026 15:24:29",
+  "total_tasks": 34,
   "events": [
-    {
-      "title": "Lab 8 Form design is due",
-      "due_date": "2026-08-30T23:59:00",
-      "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 30 สิงหาคม พ.ศ.2569\n"
-    },
-    {
-      "title": "Pre-Test_11 opens",
-      "due_date": "2026-09-01T15:14:00",
-      "description": ""
-    },
-    {
-      "title": "Note Submission is due",
-      "due_date": "2026-09-02T00:00:00",
-      "description": ""
-    },
-    {
-      "title": "Lab Submission is due",
-      "due_date": "2026-09-02T00:00:00",
-      "description": ""
-    },
     {
       "title": "Task1_5% is due",
       "due_date": "2026-09-03T00:00:00",
@@ -101,6 +81,11 @@
       "title": "(Unit 2) Part 3: Grammar closes",
       "due_date": "2026-09-11T23:59:00",
       "description": ""
+    },
+    {
+      "title": "Lab 10 Psychology of UX/UI design is due",
+      "due_date": "2026-09-13T23:59:00",
+      "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 13 กันยายน พ.ศ.2569\n"
     },
     {
       "title": "Pre-test_14 opens",
