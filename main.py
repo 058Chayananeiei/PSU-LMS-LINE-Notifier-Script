@@ -6,12 +6,6 @@ from datetime import datetime, timedelta
 import re
 import json
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
-
 # ==================== CONFIGURATION ====================
 ICAL_URL = os.environ.get("LMS_ICAL_URL", "")
 LINE_CHANNEL_ACCESS_TOKEN = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN", "")

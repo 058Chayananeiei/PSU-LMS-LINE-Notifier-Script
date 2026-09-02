@@ -85,27 +85,22 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center space-x-3">
-                    <div class="flex items-center justify-center">
-                        <img src="./psu_logo.svg" alt="PSU Logo" class="h-9 sm:h-10 w-auto object-contain brightness-0 invert drop-shadow" onerror="this.src='./psu_logo.png'" />
+                    <div class="bg-white/10 p-2 rounded-xl backdrop-blur-sm border border-white/20">
+                        <i class="fa-solid fa-calendar-days text-2xl text-psu-gold"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-lg sm:text-xl tracking-wide leading-tight flex items-center gap-2">
-                            PSU LMS Calendar & Notifier
-                        </h1>
-                        <p class="text-xs text-blue-200 font-light">มหาวิทยาลัยสงขลานครินทร์ • ตารางปฏิทินการบ้าน & แจ้งเตือน LINE</p>
+                        <h1 class="font-bold text-lg sm:text-xl tracking-wide leading-tight">PSU LMS Calendar & Notifier</h1>
+                        <p class="text-xs text-blue-200 font-light">ตารางปฏิทินการบ้าน & ระบบแจ้งเตือน LINE อัตโนมัติ</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <button onclick="toggleFocusModeModal()" id="nav-focus-btn" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 transition border border-amber-500/30 flex items-center gap-1.5">
-                        <i class="fa-solid fa-moon text-amber-400"></i> <span id="nav-focus-label">Focus Mode: ปิดอยู่</span>
-                    </button>
+                <div class="flex items-center space-x-3">
                     <button onclick="resetGithubPat()" title="ตั้งค่า GitHub Token ใหม่" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-white/10 hover:bg-white/20 text-blue-100 transition border border-white/20 flex items-center gap-1">
-                        <i class="fa-solid fa-key text-psu-gold"></i> Token
+                        <i class="fa-solid fa-key text-psu-gold"></i> ตั้งค่า Token
                     </button>
-                    <button onclick="triggerManualSync()" id="sync-status-badge" title="กดเพื่อซิงก์ข้อมูลด่วนกับ PSU LMS & LINE Notifier" class="px-3 py-1 text-xs font-medium rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 transition active:scale-95">
+                    <span id="sync-status-badge" class="px-3 py-1 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         ซิงก์ข้อมูล LINE 100%
-                    </button>
+                    </span>
                 </div>
             </div>
         </div>
@@ -113,50 +108,23 @@
 
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
-        <!-- Status & Gamification Banner -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
-            <div class="md:col-span-8 bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <img src="./psu_logo.svg" alt="PSU Logo" class="h-8 w-auto object-contain" onerror="this.src='./psu_logo.png'" />
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-800">ข้อมูลการบ้านซิงก์ตรงกับ LINE Notification</h2>
-                        <p id="last-updated-text" class="text-xs text-slate-500">อัปเดตล่าสุด: กำลังโหลดข้อมูล...</p>
-                    </div>
+        <!-- Status Banner -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-xl bg-blue-50 text-psu-blue">
+                    <i class="fa-solid fa-cloud-arrow-down text-lg"></i>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="openAddTaskModal()" class="bg-psu-blue hover:bg-blue-900 text-white font-medium px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
-                        <i class="fa-solid fa-plus"></i> เพิ่มงานใหม่
-                    </button>
-                    <button onclick="triggerManualSync()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
-                        <i class="fa-solid fa-rotate"></i> ซิงก์ข้อมูล
-                    </button>
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-800">ข้อมูลการบ้านซิงก์ตรงกับ LINE Notification</h2>
+                    <p id="last-updated-text" class="text-xs text-slate-500">อัปเดตล่าสุด: กำลังโหลดข้อมูล...</p>
                 </div>
             </div>
-
-            <!-- Gamification XP & Streak Widget -->
-            <div class="md:col-span-4 bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white rounded-2xl p-4 shadow-sm border border-indigo-700/50 flex items-center justify-between">
-                <div class="flex-grow mr-3">
-                    <div class="flex items-center gap-2">
-                        <span class="bg-amber-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Level 3</span>
-                        <span class="text-xs font-semibold text-indigo-200">🏆 750 / 1000 XP</span>
-                    </div>
-                    <div class="text-xs font-bold text-white mt-1 flex items-center gap-1.5">
-                        <span class="text-rose-400">🔥 5-Day Streak</span>
-                        <span class="text-indigo-300 font-normal">| Early Bird Slayer</span>
-                    </div>
-                    <!-- Sleek Modern Visual Progress Bar -->
-                    <div class="mt-2 w-full">
-                        <div class="w-full bg-white/20 rounded-full h-2 overflow-hidden p-0.5 backdrop-blur-xs border border-white/10">
-                            <div class="bg-gradient-to-r from-emerald-400 to-amber-300 h-full rounded-full transition-all duration-500" style="width: 75%;"></div>
-                        </div>
-                        <div class="flex justify-between items-center text-[10px] text-indigo-200 mt-1">
-                            <span class="font-mono">75% Completed</span>
-                            <span class="text-amber-300 font-bold">750 XP</span>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="switchFlexCard('gamification')" title="ดู Flex Message ฉลองเลเวล" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 transition text-amber-300 border border-white/10 shrink-0">
-                    <i class="fa-solid fa-trophy text-lg"></i>
+            <div class="flex items-center gap-2">
+                <button onclick="openAddTaskModal()" class="bg-psu-blue hover:bg-blue-900 text-white font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
+                    <i class="fa-solid fa-plus"></i> เพิ่มงานใหม่
+                </button>
+                <button onclick="loadCalendarData()" id="btn-reload" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition active:scale-95 whitespace-nowrap">
+                    <i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล
                 </button>
             </div>
         </div>
@@ -256,17 +224,6 @@
 
                     <!-- VIEW 2: TASK LIST -->
                     <div id="view-list-container" class="hidden">
-                        <!-- Search & Action Bar -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 mb-4">
-                            <div class="relative flex-grow">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                                <input id="task-search-input" onkeyup="renderTaskList()" type="text" placeholder="ค้นหางาน หรือ รายวิชา..." class="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs focus:outline-none focus:ring-2 focus:ring-psu-blue/30 focus:bg-white" />
-                            </div>
-                            <button onclick="exportTasksToIcal()" title="ดาวน์โหลดปฏิทิน iCal (.ics) ไปเปิดใน Apple / Google Calendar" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-medium transition flex items-center gap-1.5 whitespace-nowrap active:scale-95">
-                                <i class="fa-solid fa-file-export"></i> ดาวน์โหลด iCal (.ics)
-                            </button>
-                        </div>
-
                         <div class="flex items-center justify-between mb-3 text-xs text-slate-500">
                             <span id="list-title-text">รายการภาระงานทั้งหมด</span>
                             <div class="flex gap-2">
@@ -287,211 +244,63 @@
 
             <div class="lg:col-span-4 flex flex-col gap-6">
 
-                <!-- LINE Flex Message Live Preview & Studio -->
-                <div class="bg-slate-900 rounded-2xl p-5 text-white shadow-xl border border-slate-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-800">
-                            <div class="flex items-center gap-2">
-                                <i class="fa-brands fa-line text-2xl text-emerald-400"></i>
-                                <div>
-                                    <h3 class="font-semibold text-sm">LINE Flex Studio</h3>
-                                    <p class="text-[11px] text-slate-400">จำลองการ์ดแจ้งเตือน LINE Simulator</p>
-                                </div>
+                <!-- LINE Flex Message Live Preview -->
+                <div class="bg-slate-800 rounded-2xl p-5 text-white shadow-md border border-slate-700">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-brands fa-line text-2xl text-emerald-400"></i>
+                            <div>
+                                <h3 class="font-semibold text-sm">LINE Flex Preview</h3>
+                                <p class="text-xs text-slate-400">ตัวอย่างข้อความที่จะแจ้งเตือนเข้า LINE</p>
                             </div>
-                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full font-medium">Flex Ready</span>
                         </div>
-
-                        <!-- Flex Card Switcher Tabs (5 Options) -->
-                        <div class="grid grid-cols-5 bg-slate-800/80 p-1 rounded-xl text-xs font-medium mb-4 gap-1 text-center">
-                            <button onclick="switchFlexCard('urgent')" id="flex-tab-urgent" class="py-1.5 rounded-lg bg-rose-600 text-white font-semibold transition text-[10px] truncate" title="การ์ดเร่งด่วน">
-                                🚨 เร่งด่วน
-                            </button>
-                            <button onclick="switchFlexCard('digest')" id="flex-tab-digest" class="py-1.5 rounded-lg text-slate-300 hover:text-white transition text-[10px] truncate" title="Smart Weekly Digest">
-                                📊 สรุปสัปดาห์
-                            </button>
-                            <button onclick="switchFlexCard('focus')" id="flex-tab-focus" class="py-1.5 rounded-lg text-slate-300 hover:text-white transition text-[10px] truncate" title="Focus Mode Status">
-                                🌙 Focus
-                            </button>
-                            <button onclick="switchFlexCard('gamification')" id="flex-tab-gamification" class="py-1.5 rounded-lg text-slate-300 hover:text-white transition text-[10px] truncate" title="Gamification & XP">
-                                🎮 Badges
-                            </button>
-                            <button onclick="switchFlexCard('grades')" id="flex-tab-grades" class="py-1.5 rounded-lg text-slate-300 hover:text-white transition text-[10px] truncate" title="ประกาศเกรดแล้ว">
-                                📢 เกรดออก
-                            </button>
-                        </div>
-
-                        <!-- LINE Bubble Mockup Container -->
-                        <div class="bg-slate-950 p-4 rounded-2xl text-slate-900 line-bubble-shadow max-w-sm mx-auto border border-slate-800 overflow-hidden">
-                            
-                            <!-- CARD 1: URGENT FLEX CARD -->
-                            <div id="flex-card-urgent-view" class="block">
-                                <div class="bg-[#DC2626] text-white p-3.5 rounded-t-xl">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-bold tracking-wider text-[#FEF08A]">⚠️ URGENT DEADLINE</span>
-                                        <span class="text-[10px] font-bold text-white bg-black/20 px-1.5 py-0.5 rounded">⏰ เหลือ 12 ชม.</span>
-                                    </div>
-                                    <div id="flex-urgent-title" class="text-base font-bold mt-1">🚨 Project Phase 2: Microservices</div>
-                                    <div id="flex-urgent-date" class="text-[11px] text-red-100 mt-0.5">วิชา 240-311 Distributed Computing</div>
-                                </div>
-                                <div class="bg-white p-3.5 space-y-3 text-xs">
-                                    <div class="flex items-center justify-between text-slate-600">
-                                        <span>กำหนดส่ง:</span>
-                                        <span class="font-bold text-rose-600">วันนี้ 23:59 น.</span>
-                                    </div>
-                                    <div class="border-t border-slate-100 pt-2">
-                                        <div class="flex items-center justify-between text-[11px] mb-1 font-bold">
-                                            <span class="text-slate-500">ความคืบหน้าการส่งงาน</span>
-                                            <span class="text-emerald-600">75% Completed</span>
-                                        </div>
-                                        <div class="w-full bg-slate-100 rounded-full h-3 p-0.5 border border-slate-200 overflow-hidden">
-                                            <div class="bg-gradient-to-r from-blue-600 to-emerald-500 h-full rounded-full transition-all duration-500 shadow-sm" style="width: 75%;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-b-xl border-t border-slate-100 flex gap-2">
-                                    <button onclick="showToast('🔗 กำลังเชื่อมต่อไปยังระบบ PSU LMS...', 'info'); setTimeout(() => window.open('https://lms2.psu.ac.th', '_blank'), 500);" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-1.5 rounded-lg text-xs transition">
-                                        ดูรายละเอียด
-                                    </button>
-                                    <button onclick="showToast('🚀 กำลังไปยังหน้าส่งงานบน PSU LMS...', 'success'); setTimeout(() => window.open('https://lms2.psu.ac.th', '_blank'), 500);" class="flex-1 bg-[#DC2626] hover:bg-red-700 text-white font-semibold py-1.5 rounded-lg text-xs transition shadow-sm">
-                                        ส่งงานทันที 🚀
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- CARD 2: SMART WEEKLY DIGEST CARD -->
-                            <div id="flex-card-digest-view" class="hidden">
-                                <div class="bg-[#1E1B4B] text-white p-3.5 rounded-t-xl">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-bold tracking-wider text-[#A7F3D0]">📊 SMART WEEKLY DIGEST</span>
-                                        <span class="text-[10px] font-bold text-emerald-300 bg-emerald-950/60 border border-emerald-500/40 px-1.5 py-0.5 rounded">🟢 งานปานกลาง</span>
-                                    </div>
-                                    <div class="text-base font-bold mt-1">สรุปภาระงานประจำสัปดาห์นี้</div>
-                                    <div class="text-[11px] text-indigo-200 mt-0.5">รวม 3 วิชาที่ต้องส่งในอีก 7 วัน</div>
-                                </div>
-                                <div class="bg-white p-3.5 space-y-2.5 text-xs">
-                                    <div class="p-2 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-between">
-                                        <div>
-                                            <div class="font-bold text-indigo-900">240-311 Distributed</div>
-                                            <div class="text-[10px] text-indigo-600">พุธนี้ • รายงานกลุ่ม Microservices</div>
-                                        </div>
-                                        <span class="bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">ด่วน</span>
-                                    </div>
-                                    <div class="p-2 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
-                                        <div>
-                                            <div class="font-bold text-slate-800">240-302 Web Tech</div>
-                                            <div class="text-[10px] text-slate-500">ศุกร์นี้ • Lab Quiz 4</div>
-                                        </div>
-                                        <span class="bg-amber-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">ปกติ</span>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-b-xl border-t border-slate-100 flex gap-2">
-                                    <button onclick="alert('ตั้งเวลาเข้า Google Calendar')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1.5 rounded-lg text-xs transition">
-                                        📅 ตั้งเตือนปฏิทิน
-                                    </button>
-                                    <button onclick="alert('ดูตารางงานทั้งหมด')" class="flex-1 bg-[#1E1B4B] hover:bg-indigo-950 text-white font-semibold py-1.5 rounded-lg text-xs transition">
-                                        ดูตารางทั้งหมด
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- CARD 3: FOCUS MODE CARD -->
-                            <div id="flex-card-focus-view" class="hidden">
-                                <div class="bg-[#0F172A] text-white p-3.5 rounded-t-xl">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-bold tracking-wider text-[#F59E0B]">🌙 FOCUS MODE ACTIVE</span>
-                                        <span class="text-[10px] font-bold text-amber-400 bg-amber-950/60 border border-amber-500/40 px-1.5 py-0.5 rounded">ON</span>
-                                    </div>
-                                    <div class="text-base font-bold mt-1">ปิดเสียงแจ้งเตือนชั่วคราว</div>
-                                    <div class="text-[11px] text-slate-300 mt-0.5">ระยะเวลา: 3 ชั่วโมง (อ่านหนังสือสอบ)</div>
-                                </div>
-                                <div class="bg-white p-3.5 space-y-3 text-xs">
-                                    <div class="text-center py-2 bg-amber-50 rounded-xl border border-amber-200">
-                                        <i class="fa-solid fa-bell-slash text-2xl text-amber-500 mb-1"></i>
-                                        <p class="font-bold text-slate-800 text-xs">ซ่อนข้อความรบกวนชั่วคราว</p>
-                                        <p class="text-[10px] text-slate-500 mt-0.5">ข้ามการเตือนทั่วไป • เตือนเฉพาะงานที่เหลือ < 2 ชม.</p>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-b-xl border-t border-slate-100">
-                                    <button onclick="toggleFocusModeModal()" class="w-full bg-[#F59E0B] hover:bg-amber-600 text-slate-900 font-bold py-1.5 rounded-lg text-xs transition">
-                                        ยกเลิก Focus Mode ทันที
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- CARD 4: GAMIFICATION & BADGES CARD -->
-                            <div id="flex-card-gamification-view" class="hidden">
-                                <div class="bg-gradient-to-r from-purple-700 via-indigo-700 to-purple-800 text-white p-3.5 rounded-t-xl">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-bold tracking-wider text-amber-300">🏆 ACHIEVEMENT UNLOCKED</span>
-                                        <span class="text-[10px] font-bold text-amber-300 bg-black/30 px-1.5 py-0.5 rounded">+150 XP</span>
-                                    </div>
-                                    <div class="text-base font-bold mt-1">LEVEL UP! 🚀 LEVEL 3</div>
-                                    <div class="text-[11px] text-purple-200 mt-0.5">คุณได้รับเหรียญรางวัล "Early Bird Slayer"</div>
-                                </div>
-                                <div class="bg-white p-3.5 space-y-3 text-xs">
-                                    <div class="flex items-center gap-3 bg-purple-50 p-2.5 rounded-xl border border-purple-100">
-                                        <div class="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center text-slate-900 text-xl font-bold shadow-md">
-                                            🦅
-                                        </div>
-                                        <div>
-                                            <div class="font-bold text-slate-800 text-xs">Early Bird Slayer 🏆</div>
-                                            <div class="text-[10px] text-slate-500">ส่งงานก่อนกำหนดล่วงหน้า 24 ชั่วโมง</div>
-                                        </div>
-                                    </div>
-                                    <div class="space-y-1.5 pt-1">
-                                        <div class="flex justify-between items-center text-[11px] font-bold text-slate-700">
-                                            <span class="text-rose-500">🔥 Streak 5 วันติดต่อกัน</span>
-                                            <span class="text-purple-700 font-extrabold">750 / 1000 XP (75%)</span>
-                                        </div>
-                                        <div class="w-full bg-purple-100/80 rounded-full h-3.5 p-0.5 border border-purple-200 shadow-inner overflow-hidden">
-                                            <div class="bg-gradient-to-r from-purple-600 via-indigo-600 to-amber-400 h-full rounded-full transition-all duration-500 shadow-sm" style="width: 75%;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-b-xl border-t border-slate-100 flex gap-2">
-                                    <button onclick="showToast('🏆 คัดลอกลิงก์แชร์ความสำเร็จเรียบร้อยแล้ว!', 'success')" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1.5 rounded-lg text-xs transition">
-                                        แชร์ความสำเร็จ
-                                    </button>
-                                    <button onclick="showToast('📊 กำลังเปิดหน้าตารางอันดับสะสม (Leaderboard)...', 'info')" class="flex-1 bg-indigo-900 hover:bg-indigo-950 text-white font-semibold py-1.5 rounded-lg text-xs transition">
-                                        ตารางอันดับ 🏆
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- CARD 5: GRADE RELEASE FLEX CARD -->
-                            <div id="flex-card-grades-view" class="hidden">
-                                <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-3.5 rounded-t-xl">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[10px] font-bold tracking-wider text-emerald-200">🎉 GRADE ANNOUNCEMENT</span>
-                                        <span class="text-[10px] font-bold text-white bg-black/20 px-1.5 py-0.5 rounded">NEW RELEASE</span>
-                                    </div>
-                                    <div class="text-base font-bold mt-1">ประกาศเกรดเรียบร้อยแล้ว! ✨</div>
-                                    <div class="text-[11px] text-emerald-100 mt-0.5">วิชา 240-311 Distributed Computing</div>
-                                </div>
-                                <div class="bg-white p-3.5 space-y-3 text-xs">
-                                    <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-center">
-                                        <div class="text-2xl mb-1">🎉🌟</div>
-                                        <div class="font-bold text-emerald-900 text-xs">เกรดรายวิชาถูกบันทึกลงระบบแล้ว</div>
-                                        <div class="text-[10px] text-slate-500 mt-1">กดปุ่มด้านล่างเพื่อตรวจสอบผลคะแนนและรับ XP Bonus!</div>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-b-xl border-t border-slate-100">
-                                    <button onclick="openMicroCopyModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded-lg text-xs transition flex items-center justify-center gap-1.5">
-                                        <i class="fa-solid fa-bullhorn"></i> ดูข้อความคำพูดแจ้งเตือน (5 แบบ)
-                                    </button>
-                                </div>
-                            </div>
-
-                        </div>
+                        <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded-full font-medium">Live Sync</span>
                     </div>
 
-                    <!-- JSON Copy Studio Actions -->
-                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-                        <span class="text-xs text-slate-400">LINE Flex Code Studio</span>
-                        <button onclick="copyCurrentFlexJson()" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition flex items-center gap-1.5 active:scale-95">
-                            <i class="fa-solid fa-copy"></i> คัดลอก LINE Flex JSON
+                    <!-- Flex Card Switcher Tabs -->
+                    <div class="flex bg-slate-700/60 p-1 rounded-xl text-xs font-medium mb-4 gap-1">
+                        <button onclick="switchFlexCard('urgent')" id="flex-tab-urgent" class="flex-1 py-1.5 rounded-lg bg-rose-600 text-white font-semibold transition text-center text-[11px]">
+                            🚨 การ์ดงานเร่งด่วน
+                        </button>
+                        <button onclick="switchFlexCard('all')" id="flex-tab-all" class="flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]">
+                            📚 การ์ดงานทั้งหมด
                         </button>
                     </div>
+
+                    <!-- LINE Bubble Mockup Container -->
+                    <div class="bg-slate-200 p-3 rounded-xl text-slate-900 line-bubble-shadow max-w-sm mx-auto overflow-hidden">
+                        
+                        <!-- CARD 1: URGENT FLEX CARD -->
+                        <div id="flex-card-urgent-view" class="block">
+                            <div id="flex-urgent-header" class="bg-[#DC3545] text-white p-3.5 rounded-t-xl">
+                                <div class="text-[10px] font-bold tracking-wider text-[#FFC107]">PSU LMS URGENT ALERT</div>
+                                <div id="flex-urgent-title" class="text-base font-bold mt-0.5">🚨 งานใกล้หมดเวลา</div>
+                                <div id="flex-urgent-date" class="text-[11px] text-slate-200 mt-0.5">ประจำวันที่ --/--/----</div>
+                            </div>
+                            <div id="flex-urgent-body" class="bg-white p-3.5 space-y-3 text-xs min-h-[120px]">
+                                <div class="text-center py-6 text-slate-400">กำลังโหลด...</div>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: ALL TASKS FLEX CARD -->
+                        <div id="flex-card-all-view" class="hidden">
+                            <div class="bg-[#003366] text-white p-3.5 rounded-t-xl">
+                                <div class="text-[10px] font-bold tracking-wider text-[#80BFFF]">PSU LMS ALL TASKS</div>
+                                <div id="flex-all-title" class="text-base font-bold mt-0.5">📚 สรุปงานค้างทั้งหมด</div>
+                                <div id="flex-all-date" class="text-[11px] text-slate-200 mt-0.5">ประจำวันที่ --/--/----</div>
+                            </div>
+                            <div id="flex-all-body" class="bg-white p-3.5 space-y-3 text-xs min-h-[120px]">
+                                <div class="text-center py-6 text-slate-400">กำลังโหลด...</div>
+                            </div>
+                            <div class="bg-white p-3 pt-0 rounded-b-xl border-t border-slate-100">
+                                <a href="https://lms2.psu.ac.th" target="_blank" class="block w-full text-center bg-[#003366] hover:bg-blue-900 text-white font-medium py-2 rounded-lg text-xs transition">
+                                    เข้าสู่ระบบ PSU LMS2
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
 
             </div>
@@ -499,15 +308,9 @@
         </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 mt-auto py-5">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-            <div class="flex items-center gap-2">
-                <img src="./psu_logo.svg" alt="PSU Logo" class="h-6 w-auto object-contain" onerror="this.src='./psu_logo.png'" />
-                <span class="font-semibold text-slate-700">Prince of Songkla University</span>
-            </div>
-            <div>
-                PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติทุกๆ 2 ชั่วโมง
-            </div>
+    <footer class="bg-white border-t border-slate-200 mt-auto py-4">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            PSU LMS Assignment Calendar & Dashboard • ซิงก์ระบบแจ้งเตือน LINE อัตโนมัติทุกๆ 2 ชั่วโมง
         </div>
     </footer>
 
@@ -568,140 +371,6 @@
         </div>
     </div>
 
-    <!-- Focus Mode Setup Modal -->
-    <div id="focus-mode-modal" class="fixed inset-0 z-[100] hidden items-center justify-center modal-overlay p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md modal-enter overflow-hidden">
-            <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-moon text-amber-400"></i>
-                    <h3 class="font-bold text-sm">ตั้งค่า Focus Mode (ปิดเสียงเตือน)</h3>
-                </div>
-                <button onclick="toggleFocusModeModal()" class="text-white/80 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-5 space-y-3">
-                <p class="text-xs text-slate-600 mb-3">เลือกระยะเวลาที่ต้องการปิดเสียงแจ้งเตือนชั่วคราว (ระบบยังคงแจ้งเตือนเฉพาะงานด่วนมากๆ < 2 ชม.):</p>
-                
-                <button onclick="setFocusMode(1, '1 ชั่วโมง')" class="w-full p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/50 transition flex items-center justify-between group">
-                    <div class="flex items-center gap-3">
-                        <span class="p-2 rounded-lg bg-amber-100 text-amber-700 text-sm"><i class="fa-solid fa-bolt"></i></span>
-                        <div class="text-left">
-                            <div class="font-bold text-slate-800 text-xs">⚡ 1 ชั่วโมง (อ่านหนังสือ / ทำควิซ)</div>
-                            <div class="text-[10px] text-slate-500">ซ่อนแจ้งเตือนจนถึง 1 ชม. ข้างหน้า</div>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-amber-500 text-xs"></i>
-                </button>
-
-                <button onclick="setFocusMode(3, '3 ชั่วโมง')" class="w-full p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/50 transition flex items-center justify-between group">
-                    <div class="flex items-center gap-3">
-                        <span class="p-2 rounded-lg bg-amber-100 text-amber-700 text-sm"><i class="fa-solid fa-book-open"></i></span>
-                        <div class="text-left">
-                            <div class="font-bold text-slate-800 text-xs">📚 3 ชั่วโมง (โฟกัสโปรเจกต์กลุ่ม)</div>
-                            <div class="text-[10px] text-slate-500">ซ่อนแจ้งเตือนจนถึง 3 ชม. ข้างหน้า</div>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-amber-500 text-xs"></i>
-                </button>
-
-                <button onclick="setFocusMode(12, 'คืนนี้จนถึงเช้า')" class="w-full p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:bg-amber-50/50 transition flex items-center justify-between group">
-                    <div class="flex items-center gap-3">
-                        <span class="p-2 rounded-lg bg-amber-100 text-amber-700 text-sm"><i class="fa-solid fa-bed"></i></span>
-                        <div class="text-left">
-                            <div class="font-bold text-slate-800 text-xs">🌙 พักผ่อนคืนนี้ (จนถึง 08:00 น.)</div>
-                            <div class="text-[10px] text-slate-500">ซ่อนแจ้งเตือนตลอดคืนนี้</div>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-amber-500 text-xs"></i>
-                </button>
-            </div>
-            <div class="px-5 pb-5 flex items-center gap-3">
-                <button onclick="setFocusMode(0, 'ปิดอยู่')" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
-                    ยกเลิก / เปิดรับแจ้งเตือนปกติ
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Grade Release Micro-copy Modal -->
-    <div id="micro-copy-modal" class="fixed inset-0 z-[100] hidden items-center justify-center modal-overlay p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl modal-enter overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="bg-emerald-700 text-white px-5 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn text-emerald-200"></i>
-                    <h3 class="font-bold text-sm">คลังข้อความคำพูดแจ้งเตือน (Micro-copy 5 สไตล์)</h3>
-                </div>
-                <button onclick="closeMicroCopyModal()" class="text-white/80 hover:text-white text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-5 overflow-y-auto space-y-4 text-xs">
-                
-                <!-- Item 1 -->
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500 transition">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded text-[10px]">แบบที่ 1: สายฉลอง & เติมพลัง 🎉</span>
-                        <button onclick="copyMicroText('เย้! ประกาศเกรดแล้วน้าาา 🎉✨\nวิชา [ชื่อวิชา] ออกเกรดเรียบร้อยแล้วครับ! ไม่ว่าผลจะเป็นยังไง ความพยายามของน้องสุดยอดเสมอ 💙\nกดปุ่มข้างล่างเพื่อเข้าไปเช็กคะแนนและรับ XP สะสมได้เลย! 👇🚀')" class="text-emerald-600 hover:underline font-semibold text-[11px] flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> คัดลอก
-                        </button>
-                    </div>
-                    <p class="text-slate-700 font-medium">"เย้! ประกาศเกรดแล้วน้าาา 🎉✨ วิชา [ชื่อวิชา] ออกเกรดเรียบร้อยแล้วครับ! ไม่ว่าผลจะเป็นยังไง ความพยายามของน้องสุดยอดเสมอ 💙 กดปุ่มข้างล่างเพื่อเข้าไปเช็กคะแนนและรับ XP สะสมได้เลย! 👇🚀"</p>
-                </div>
-
-                <!-- Item 2 -->
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500 transition">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="font-bold text-blue-800 bg-blue-100 px-2 py-0.5 rounded text-[10px]">แบบที่ 2: สายชิล กันเอง 😎</span>
-                        <button onclick="copyMicroText('แอบแวะมาบอก... เกรดออกแล้วจ้า! 🤫 ผลสอบวิชา [ชื่อวิชา] พร้อมให้เช็กแล้วน้า ลุ้นไปพร้อมกันเลย!\nขอให้ A พุ่งใส่ทุกวิชาสาธุ 555 🙏 กดดูคะแนนได้เลยจ้า ✨')" class="text-emerald-600 hover:underline font-semibold text-[11px] flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> คัดลอก
-                        </button>
-                    </div>
-                    <p class="text-slate-700 font-medium">"แอบแวะมาบอก... เกรดออกแล้วจ้า! 🤫 ผลสอบวิชา [ชื่อวิชา] พร้อมให้เช็กแล้วน้า ลุ้นไปพร้อมกันเลย! ขอให้ A พุ่งใส่ทุกวิชาสาธุ 555 🙏 กดดูคะแนนได้เลยจ้า ✨"</p>
-                </div>
-
-                <!-- Item 3 -->
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500 transition">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="font-bold text-purple-800 bg-purple-100 px-2 py-0.5 rounded text-[10px]">แบบที่ 3: สายซัพพอร์ตสร้างกำลังใจ 🌟</span>
-                        <button onclick="copyMicroText('ความทุ่มเทเริ่มส่งผลแล้ว! 🌟\nผลการเรียนวิชา [ชื่อวิชา] ได้รับการอัปเดตในระบบเรียบร้อยครับ\nทุกก้าวเรียนรู้คือความก้าวหน้า เข้าไปดูผลงานความพยายามของคุณกันเลย 🎓💪')" class="text-emerald-600 hover:underline font-semibold text-[11px] flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> คัดลอก
-                        </button>
-                    </div>
-                    <p class="text-slate-700 font-medium">"ความทุ่มเทเริ่มส่งผลแล้ว! 🌟 ผลการเรียนวิชา [ชื่อวิชา] ได้รับการอัปเดตในระบบเรียบร้อยครับ ทุกก้าวเรียนรู้คือความก้าวหน้า เข้าไปดูผลงานความพยายามของคุณกันเลย 🎓💪"</p>
-                </div>
-
-                <!-- Item 4 -->
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500 transition">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded text-[10px]">แบบที่ 4: สายกระชับ ทันใจ 🚀</span>
-                        <button onclick="copyMicroText('🔔 เกรดวิชา [ชื่อวิชา] ออกแล้ว!\nเช็กคะแนนด่วนก่อนใครได้ทันทีผ่านระบบ LMS 📲\n➡️ [กดเพื่อดูเกรดของคุณ]')" class="text-emerald-600 hover:underline font-semibold text-[11px] flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> คัดลอก
-                        </button>
-                    </div>
-                    <p class="text-slate-700 font-medium">"🔔 เกรดวิชา [ชื่อวิชา] ออกแล้ว! เช็กคะแนนด่วนก่อนใครได้ทันทีผ่านระบบ LMS 📲 ➡️ [กดเพื่อดูเกรดของคุณ]"</p>
-                </div>
-
-                <!-- Item 5 -->
-                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500 transition">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="font-bold text-indigo-800 bg-indigo-100 px-2 py-0.5 rounded text-[10px]">แบบที่ 5: สายเกม RPG 🎮</span>
-                        <button onclick="copyMicroText('🎮 MISSION COMPLETE! Level Up Time! ⚔️\nเควสวิชา [ชื่อวิชา] เสร็จสิ้นแล้ว! อาจารย์ประกาศเกรดเรียบร้อย 🏆\nคุณได้รับ +250 XP และ Badge ประจำรายวิชา! กดเปิดกล่องสุ่มดูคะแนนกันเลย 🎁👇')" class="text-emerald-600 hover:underline font-semibold text-[11px] flex items-center gap-1">
-                            <i class="fa-solid fa-copy"></i> คัดลอก
-                        </button>
-                    </div>
-                    <p class="text-slate-700 font-medium">"🎮 MISSION COMPLETE! Level Up Time! ⚔️ เควสวิชา [ชื่อวิชา] เสร็จสิ้นแล้ว! อาจารย์ประกาศเกรดเรียบร้อย 🏆 คุณได้รับ +250 XP และ Badge ประจำรายวิชา! กดเปิดกล่องสุ่มดูคะแนนกันเลย 🎁👇"</p>
-                </div>
-
-            </div>
-            <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 text-right">
-                <button onclick="closeMicroCopyModal()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold transition">
-                    ปิดหน้าต่าง
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ==================== CONFIGURATION ====================
         const REPO_OWNER = '058Chayananeiei';
@@ -732,12 +401,7 @@
         // โหลดรายการงานที่ผู้ใช้เพิ่มเองจาก localStorage
         function getManualTasks() {
             try {
-                const list = JSON.parse(localStorage.getItem(MANUAL_TASKS_KEY)) || [];
-                // แปลง string กลับเป็น Date object เพื่อให้ใช้งานต่อได้ไม่พัง
-                return list.map(t => ({
-                    ...t,
-                    due_date: new Date(t.due) 
-                }));
+                return JSON.parse(localStorage.getItem(MANUAL_TASKS_KEY)) || [];
             } catch (e) {
                 return [];
             }
@@ -745,17 +409,13 @@
 
         // บันทึกรายการงานที่ผู้ใช้เพิ่มเองลง localStorage (เก็บเป็น string date เพื่อ serialize ได้)
         function saveManualTasks(list) {
-            const serializable = list.map(t => {
-                // เช็กให้ชัวร์ว่าเป็น Date object ก่อนเรียก toISOString()
-                const dateObj = t.due_date instanceof Date ? t.due_date : new Date(t.due || t.due_date);
-                return {
-                    id: t.id,
-                    title: t.title,
-                    due: dateObj.toISOString(),
-                    description: t.description || "",
-                    manual: true
-                };
-            });
+            const serializable = list.map(t => ({
+                id: t.id,
+                title: t.title,
+                due: t.due_date.toISOString(),
+                description: t.description || "",
+                manual: true
+            }));
             localStorage.setItem(MANUAL_TASKS_KEY, JSON.stringify(serializable));
         }
 
@@ -830,14 +490,15 @@
             fetchedEvents.push(newTask);
             fetchedEvents.sort((a, b) => a.due_date - b.due_date);
 
+            // เก็บลง localStorage เพื่อให้อยู่ถาวรแม้รีเฟรชหน้า
             const manualList = getManualTasks();
             manualList.push(newTask);
             saveManualTasks(manualList);
 
             renderDashboard();
             closeAddTaskModal();
-            showToast("✅ บันทึกงานใหม่เรียบร้อยแล้ว!", "success");
 
+            // ส่งแจ้งเตือนเข้า LINE ทันที (ถ้าติ๊กเลือกไว้)
             if (document.getElementById('input-task-notify').checked) {
                 sendLineTaskAddedNotification(newTask.title, newTask.due_date, newTask.description);
             }
@@ -848,7 +509,7 @@
             const newPat = prompt("🔑 ใส่ GitHub Personal Access Token (PAT) ของคุณเพื่อใช้ส่งแจ้งเตือนเข้า LINE:");
             if (newPat && newPat.trim()) {
                 localStorage.setItem('psu_github_pat', newPat.trim());
-                showToast("✅ บันทึก GitHub PAT สำเร็จเรียบร้อย!", "success");
+                alert("✅ บันทึก GitHub PAT สำเร็จเรียบร้อย!");
             }
         }
 
@@ -892,7 +553,7 @@
                 if (response.ok) {
                     console.log(`✅ ส่งสัญญาณ "${eventType}" เข้า GitHub Actions สำเร็จ!`);
                 } else if (response.status === 401) {
-                    showToast("❌ Token ไม่ถูกต้องหรือหมดอายุ โปรดลองใส่อีกครั้ง", "error");
+                    alert("❌ Token ไม่ถูกต้องหรือหมดอายุ โปรดลองใส่อีกครั้ง");
                     localStorage.removeItem('psu_github_pat');
                 } else {
                     console.error('❌ ไม่สามารถส่งสัญญาณไปยัง GitHub Actions ได้ Status:', response.status);
@@ -900,128 +561,6 @@
             } catch (error) {
                 console.error('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ GitHub API:', error);
             }
-        }
-
-        // 📌 ข้อมูลงานสำรองล่วงหน้า (Fallback Events) กรณีเปิดไฟล์แบบ file:// หรือออฟไลน์
-        const FALLBACK_EVENTS = [
-            { "title": "Lab 8 Form design is due", "due_date": "2026-08-30T23:59:00", "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 30 สิงหาคม พ.ศ.2569" },
-            { "title": "Pre-Test_11 opens", "due_date": "2026-09-01T15:14:00", "description": "" },
-            { "title": "Note Submission is due", "due_date": "2026-09-02T00:00:00", "description": "" },
-            { "title": "Lab Submission is due", "due_date": "2026-09-02T00:00:00", "description": "" },
-            { "title": "Task1_5% is due", "due_date": "2026-09-03T00:00:00", "description": "วิเคราะห์รูปแบบการวิจัยว่าใช้รูปแบบใด (งานคู่)" },
-            { "title": "Post-Test_11 closes", "due_date": "2026-09-04T13:05:00", "description": "" },
-            { "title": "308-312_Ex07_Grab is due", "due_date": "2026-09-04T13:27:00", "description": "CASE STUDY: GRAB CAR - Workflow & DFD Diagram" },
-            { "title": "Lab 9 Case study and Trends is due", "due_date": "2026-09-06T23:59:00", "description": "กำหนดส่งภายในเวลา 23:59 น." },
-            { "title": "Assigment: Complete demo of circle (3 methods) is due", "due_date": "2026-09-07T23:59:00", "description": "C5.CalDiameter() & C5.CalCircumference()" },
-            { "title": "งานที่ 3 - อธิบายภาพรวมของบทความวิจัย is due", "due_date": "2026-09-09T16:30:00", "description": "" },
-            { "title": "308-311_Ex11_Grab is due", "due_date": "2026-09-11T13:00:00", "description": "Class Diagram & ER Diagram" }
-        ];
-
-        async function loadCalendarData() {
-            const btnReload = document.getElementById('btn-reload');
-            const badge = document.getElementById('sync-status-badge');
-            
-            if (btnReload) {
-                btnReload.disabled = true;
-                btnReload.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังโหลด...`;
-            }
-            if (badge) {
-                badge.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังซิงก์...`;
-            }
-
-            const completedIds = getCompletedTaskIds();
-            let loadedSuccess = false;
-
-            try {
-                const response = await fetch('./data.json?t=' + new Date().getTime(), { cache: 'no-store' });
-                if (response.ok) {
-                    const data = await response.json();
-                    const rawList = data.tasks || data.events || [];
-                    
-                    const parsedList = rawList.map((e, index) => {
-                        const taskId = e.id || e.summary || e.title || `task-${index}`;
-                        const rawDue = e.due || e.due_date;
-                        let dateObj = null;
-                        if (rawDue) {
-                            const sanitizedDue = typeof rawDue === 'string' ? rawDue.replace(' ', 'T') : rawDue;
-                            dateObj = new Date(sanitizedDue);
-                        }
-                        if (!dateObj || isNaN(dateObj.getTime())) {
-                            dateObj = new Date();
-                        }
-                        return {
-                            id: taskId,
-                            title: e.title || e.summary,
-                            due_date: dateObj,
-                            description: e.description || "",
-                            completed: completedIds.includes(taskId)
-                        };
-                    });
-
-                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parsedList));
-                    const statusText = document.getElementById('last-updated-text');
-                    if (statusText) {
-                        statusText.innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
-                    }
-                    loadedSuccess = true;
-                } else {
-                    throw new Error("data.json HTTP status " + response.status);
-                }
-            } catch (err) {
-                console.warn("Could not load data.json, trying direct fetch/fallback:", err);
-                loadedSuccess = await fetchDirectiCal();
-            } finally {
-                if (!loadedSuccess && (!fetchedEvents || fetchedEvents.length === 0)) {
-                    const parsedFallback = FALLBACK_EVENTS.map((e, index) => {
-                        const taskId = `fallback-${index}`;
-                        return {
-                            id: taskId,
-                            title: e.title,
-                            due_date: new Date(e.due_date),
-                            description: e.description || "",
-                            completed: completedIds.includes(taskId)
-                        };
-                    });
-                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parsedFallback));
-                    const statusText = document.getElementById('last-updated-text');
-                    if (statusText) {
-                        statusText.innerText = `✓ ข้อมูลปฏิทิน PSU LMS (Offline / Ready)`;
-                    }
-                }
-
-                renderDashboard();
-
-                if (btnReload) {
-                    btnReload.disabled = false;
-                    btnReload.innerHTML = `<i class="fa-solid fa-rotate"></i> ซิงก์ข้อมูล`;
-                }
-                if (badge) {
-                    badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ซิงก์ข้อมูล LINE 100%`;
-                }
-            }
-        }
-
-        async function fetchDirectiCal() {
-            const defaultIcalUrl = "https://lms.psu.ac.th/calendar/export_execute.php?userid=56828&authtoken=3463a3bce6ca9586ecb1a5abf0d4757ebf314808&preset_what=all&preset_time=recentupcoming";
-            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(defaultIcalUrl);
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-            try {
-                const res = await fetch(proxyUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                if (res.ok) {
-                    const text = await res.text();
-                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parseICal(text)));
-                    const statusText = document.getElementById('last-updated-text');
-                    if (statusText) statusText.innerText = `อัปเดตสดจาก PSU LMS ผ่าน Proxy (ตรง 100%)`;
-                    return true;
-                }
-            } catch (e) {
-                console.error("Direct fetch failed or timed out", e);
-            }
-            return false;
         }
 
         // ฟังก์ชันส่งสัญญาณเข้า GitHub Actions เพื่อยิง LINE Notify เมื่อทำงานเสร็จ
@@ -1107,6 +646,66 @@
             return list;
         }
 
+        async function loadCalendarData() {
+            const btnReload = document.getElementById('btn-reload');
+            btnReload.disabled = true;
+            btnReload.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังโหลด...`;
+
+            const completedIds = getCompletedTaskIds();
+
+            try {
+                const response = await fetch('./data.json?t=' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    const rawList = data.tasks || data.events || [];
+                    
+                    const parsedList = rawList.map((e, index) => {
+                        const taskId = e.id || e.summary || e.title || `task-${index}`;
+                        return {
+                            id: taskId,
+                            title: e.title || e.summary,
+                            due_date: new Date(e.due || e.due_date),
+                            description: e.description || "",
+                            completed: completedIds.includes(taskId)
+                        };
+                    });
+
+                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parsedList));
+                    document.getElementById('last-updated-text').innerText = `อัปเดตล่าสุด: ${data.updated_at || data.last_updated || 'เพิ่งอัปเดต'} (ตรงกับ LINE)`;
+                } else {
+                    throw new Error("data.json not found");
+                }
+            } catch (err) {
+                console.warn("Could not load data.json, falling back to direct iCal fetch:", err);
+                await fetchDirectiCal();
+            }
+
+            renderDashboard();
+
+            btnReload.disabled = false;
+            btnReload.innerHTML = `<i class="fa-solid fa-rotate"></i> รีเฟรชข้อมูล`;
+        }
+
+        async function fetchDirectiCal() {
+            const defaultIcalUrl = "https://lms.psu.ac.th/calendar/export_execute.php?userid=56828&authtoken=3463a3bce6ca9586ecb1a5abf0d4757ebf314808&preset_what=all&preset_time=recentupcoming";
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(defaultIcalUrl);
+
+            try {
+                const res = await fetch(proxyUrl);
+                if (res.ok) {
+                    const text = await res.text();
+                    fetchedEvents = filterExpiredEvents(mergeManualTasks(parseICal(text)));
+                    document.getElementById('last-updated-text').innerText = `อัปเดตสดจาก PSU LMS ผ่าน Proxy (ตรง 100%)`;
+                } else {
+                    fetchedEvents = filterExpiredEvents(mergeManualTasks([]));
+                    document.getElementById('last-updated-text').innerText = `กรุณาเปิดสิทธิ์ GitHub Actions เพื่อสร้าง data.json`;
+                }
+            } catch (e) {
+                console.error("Direct fetch failed", e);
+                fetchedEvents = filterExpiredEvents(mergeManualTasks([]));
+                document.getElementById('last-updated-text').innerText = `ยังไม่พบไฟล์ data.json กรุณากด Run workflow บน GitHub`;
+            }
+        }
 
         function parseICal(icalText) {
             const events = [];
@@ -1335,15 +934,6 @@
 
             let displayList = fetchedEvents;
 
-            const searchInput = document.getElementById('task-search-input');
-            const searchKeyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
-            if (searchKeyword) {
-                displayList = displayList.filter(e => 
-                    e.title.toLowerCase().includes(searchKeyword) || 
-                    (e.description && e.description.toLowerCase().includes(searchKeyword))
-                );
-            }
-
             if (selectedFilterDateStr) {
                 const [y, m, d] = selectedFilterDateStr.split('-');
                 displayList = displayList.filter(e => {
@@ -1437,234 +1027,24 @@
             container.innerHTML = html;
         }
 
-        // ==================== TOAST & LIVE SYNC HANDLERS ====================
-        function showToast(message, type = 'info') {
-            let container = document.getElementById('toast-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'toast-container';
-                container.className = 'fixed bottom-6 right-6 z-[200] flex flex-col gap-2 pointer-events-none';
-                document.body.appendChild(container);
-            }
-
-            const toast = document.createElement('div');
-            let bgColors = "bg-slate-900 text-white border-slate-700 shadow-2xl";
-            let icon = "fa-circle-info text-blue-400";
-            
-            if (type === 'success') {
-                bgColors = "bg-emerald-900 text-emerald-100 border-emerald-700 shadow-2xl";
-                icon = "fa-circle-check text-emerald-400";
-            } else if (type === 'error') {
-                bgColors = "bg-rose-900 text-rose-100 border-rose-700 shadow-2xl";
-                icon = "fa-circle-exclamation text-rose-400";
-            }
-
-            toast.className = `${bgColors} px-4 py-3 rounded-xl border text-xs font-medium flex items-center gap-2.5 transform transition-all duration-300 opacity-0 translate-y-4 pointer-events-auto max-w-md backdrop-blur-md`;
-            toast.innerHTML = `<i class="fa-solid ${icon} text-base shrink-0"></i> <span>${message}</span>`;
-            
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('opacity-0', 'translate-y-4');
-                toast.classList.add('opacity-100', 'translate-y-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'translate-y-4');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
-
-        async function triggerManualSync() {
-            const badge = document.getElementById('sync-status-badge');
-            const btnReload = document.getElementById('btn-reload');
-            
-            if (badge) {
-                badge.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังซิงก์...`;
-            }
-            if (btnReload) {
-                btnReload.disabled = true;
-                btnReload.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังซิงก์...`;
-            }
-
-            showToast("🔄 กำลังดึงข้อมูลการบ้าน PSU LMS และซิงก์กับ LINE Notifier...", "info");
-
-            await loadCalendarData();
-
-            const pat = localStorage.getItem('psu_github_pat');
-            if (pat) {
-                await dispatchGithubEvent('manual_sync', { timestamp: new Date().toISOString() });
-                showToast("✅ ซิงก์ข้อมูลกับ PSU LMS และส่งสัญญาณ LINE Notifier เรียบร้อยแล้ว!", "success");
-            } else {
-                showToast("✅ อัปเดตปฏิทิน PSU LMS ล่าสุดเรียบร้อยแล้ว!", "success");
-            }
-
-            if (badge) {
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> ซิงก์ข้อมูล LINE 100%`;
-            }
-            if (btnReload) {
-                btnReload.disabled = false;
-                btnReload.innerHTML = `<i class="fa-solid fa-rotate"></i> ซิงก์ข้อมูล`;
-            }
-        }
-
-        // ==================== MODAL & FEATURE HANDLERS ====================
-        function exportTasksToIcal() {
-            if (!fetchedEvents || fetchedEvents.length === 0) {
-                showToast("⚠️ ไม่มีงานในระบบสำหรับส่งออก iCal", "error");
-                return;
-            }
-            let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//PSU LMS Notifier//TH\n";
-            fetchedEvents.forEach((item) => {
-                const dt = item.due_date;
-                const dtStr = dt.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-                icsContent += `BEGIN:VEVENT\nSUMMARY:${item.title}\nDTSTART:${dtStr}\nDTEND:${dtStr}\nDESCRIPTION:${item.description || "PSU LMS Assignment"}\nEND:VEVENT\n`;
-            });
-            icsContent += "END:VCALENDAR";
-
-            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `psu_lms_tasks_${Date.now()}.ics`;
-            link.click();
-            showToast("📅 ดาวน์โหลดไฟล์ปฏิทิน iCal (.ics) เรียบร้อยแล้ว!", "success");
-        }
-
-        function toggleFocusModeModal() {
-            const modal = document.getElementById('focus-mode-modal');
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            } else {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        function setFocusMode(hours, label) {
-            const btnLabel = document.getElementById('nav-focus-label');
-            const btn = document.getElementById('nav-focus-btn');
-            
-            if (hours > 0) {
-                btnLabel.innerText = `Focus: ${label}`;
-                btn.className = "px-2.5 py-1 text-xs font-bold rounded-lg bg-amber-500 text-slate-900 shadow-sm transition flex items-center gap-1.5 animate-pulse";
-                switchFlexCard('focus');
-                showToast(`🌙 เปิดใช้งาน Focus Mode: ${label} เรียบร้อยแล้ว`, "success");
-            } else {
-                btnLabel.innerText = "Focus Mode: ปิดอยู่";
-                btn.className = "px-2.5 py-1 text-xs font-medium rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 transition border border-amber-500/30 flex items-center gap-1.5";
-                showToast("🔔 ยกเลิก Focus Mode แล้ว เปิดรับแจ้งเตือนตามปกติ", "info");
-            }
-            toggleFocusModeModal();
-        }
-
-        function openMicroCopyModal() {
-            const modal = document.getElementById('micro-copy-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeMicroCopyModal() {
-            const modal = document.getElementById('micro-copy-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function copyMicroText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast("✅ คัดลอกข้อความแจ้งเตือนเรียบร้อยแล้ว!", "success");
-            }).catch(err => {
-                console.error("Copy failed", err);
-            });
-        }
-
         function switchFlexCard(cardType) {
             activeFlexTab = cardType;
-            const tabs = ['urgent', 'digest', 'focus', 'gamification', 'grades'];
-            
-            tabs.forEach(tab => {
-                const tabEl = document.getElementById(`flex-tab-${tab}`);
-                const viewEl = document.getElementById(`flex-card-${tab}-view`);
-                
-                if (tabEl) {
-                    if (tab === cardType) {
-                        tabEl.className = "py-1.5 rounded-lg bg-rose-600 text-white font-bold transition text-[10px] truncate shadow-sm";
-                    } else {
-                        tabEl.className = "py-1.5 rounded-lg text-slate-300 hover:text-white transition text-[10px] truncate";
-                    }
-                }
-                if (viewEl) {
-                    if (tab === cardType) {
-                        viewEl.classList.remove('hidden');
-                        viewEl.classList.add('block');
-                    } else {
-                        viewEl.classList.add('hidden');
-                        viewEl.classList.remove('block');
-                    }
-                }
-            });
-        }
+            const tabUrgent = document.getElementById('flex-tab-urgent');
+            const tabAll = document.getElementById('flex-tab-all');
+            const viewUrgent = document.getElementById('flex-card-urgent-view');
+            const viewAll = document.getElementById('flex-card-all-view');
 
-        function copyCurrentFlexJson() {
-            const urgentJson = {
-                "type": "bubble",
-                "size": "mega",
-                "header": {
-                    "type": "box", "layout": "vertical", "backgroundColor": "#DC2626", "paddingAll": "lg",
-                    "contents": [
-                        {
-                            "type": "box", "layout": "horizontal", "alignment": "center",
-                            "contents": [
-                                { "type": "text", "text": "⚠️ URGENT DEADLINE", "weight": "bold", "color": "#FFFFFF", "size": "md", "flex": 1 },
-                                { "type": "text", "text": "⏰ เหลือ 12 ชม.", "weight": "bold", "color": "#FEF08A", "size": "xs", "align": "end" }
-                            ]
-                        }
-                    ]
-                },
-                "body": {
-                    "type": "box", "layout": "vertical", "spacing": "md", "paddingAll": "lg",
-                    "contents": [
-                        { "type": "text", "text": "240-311 Distributed Computing", "weight": "bold", "size": "xs", "color": "#2563EB" },
-                        { "type": "text", "text": "Project Phase 2: Microservices Deployment", "weight": "bold", "size": "lg", "color": "#0F172A", "wrap": true },
-                        {
-                            "type": "box", "layout": "horizontal", "margin": "md",
-                            "contents": [
-                                { "type": "text", "text": "⏰ ครบกำหนด:", "size": "sm", "color": "#64748B", "flex": 2 },
-                                { "type": "text", "text": "เหลือเวลาอีก 12 ชั่วโมง!", "size": "sm", "weight": "bold", "color": "#DC2626", "flex": 4, "align": "end" }
-                            ]
-                        },
-                        { "type": "separator", "margin": "md" },
-                        {
-                            "type": "box", "layout": "vertical", "margin": "md", "spacing": "xs",
-                            "contents": [
-                                {
-                                    "type": "box", "layout": "horizontal",
-                                    "contents": [
-                                        { "type": "text", "text": "ความคืบหน้าการส่งงานวิชานี้", "size": "xs", "color": "#475569", "flex": 3 },
-                                        { "type": "text", "text": "75% Completed", "size": "xs", "weight": "bold", "color": "#16A34A", "align": "end", "flex": 2 }
-                                    ]
-                                },
-                                { "type": "text", "text": "[████████░░] 75%", "weight": "bold", "size": "sm", "color": "#2563EB", "margin": "xs" }
-                            ]
-                        }
-                    ]
-                },
-                "footer": {
-                    "type": "box", "layout": "horizontal", "spacing": "sm", "paddingAll": "md",
-                    "contents": [
-                        { "type": "button", "style": "secondary", "height": "sm", "action": { "type": "uri", "label": "ดูรายละเอียด", "uri": "https://lms2.psu.ac.th" }, "color": "#F1F5F9" },
-                        { "type": "button", "style": "primary", "height": "sm", "action": { "type": "uri", "label": "ส่งงานทันที 🚀", "uri": "https://lms2.psu.ac.th" }, "color": "#DC2626" }
-                    ]
-                }
-            };
-
-            const jsonStr = JSON.stringify(urgentJson, null, 2);
-            navigator.clipboard.writeText(jsonStr).then(() => {
-                showToast("✅ คัดลอก LINE Flex Message JSON สำหรับ LINE Simulator เรียบร้อยแล้ว!", "success");
-            }).catch(err => {
-                console.error("Copy JSON failed", err);
-            });
+            if (cardType === 'urgent') {
+                tabUrgent.className = "flex-1 py-1.5 rounded-lg bg-rose-600 text-white font-semibold transition text-center text-[11px]";
+                tabAll.className = "flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]";
+                viewUrgent.classList.remove('hidden');
+                viewAll.classList.add('hidden');
+            } else {
+                tabAll.className = "flex-1 py-1.5 rounded-lg bg-psu-blue text-white font-semibold transition text-center text-[11px]";
+                tabUrgent.className = "flex-1 py-1.5 rounded-lg text-slate-300 hover:text-white transition text-center text-[11px]";
+                viewAll.classList.remove('hidden');
+                viewUrgent.classList.add('hidden');
+            }
         }
 
         function renderFlexPreview() {
