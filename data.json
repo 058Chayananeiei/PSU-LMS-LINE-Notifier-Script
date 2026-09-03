@@ -1,6 +1,6 @@
 {
-  "last_updated": "03/09/2026 11:04:27",
-  "total_tasks": 33,
+  "last_updated": "03/09/2026 16:35:30",
+  "total_tasks": 35,
   "events": [
     {
       "title": "Pre-Test_11 closes",
@@ -56,6 +56,11 @@
       "title": "งานที่ 3 - อธิบายภาพรวมของบทความวิจัย is due",
       "due_date": "2026-09-09T16:30:00",
       "description": ""
+    },
+    {
+      "title": "ส่งใบประกาศการอบรม EC (5 คะแนน) is due",
+      "due_date": "2026-09-10T00:00:00",
+      "description": "ส่งใบประกาศ EC ได้จนถึงวันที่ 27/9/2025\n"
     },
     {
       "title": "308-311_Ex11_Grab is due",
@@ -166,6 +171,11 @@
       "title": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 (Questionnaire Closes)",
       "due_date": "2026-10-14T16:00:00",
       "description": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 [1]\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/questionnaire/view.php?id=633220\n"
+    },
+    {
+      "title": "ส่งTask_308-301 : Statistics Analysis_15% ที่นี่_24/9/2026 is due",
+      "due_date": "2026-10-24T23:59:00",
+      "description": "สิ่งที่ต้องส่ง\n1.data (excel หรือ csv)\n2. pdf ไฟด์ output ผลการวิเคราะห์จาก jamuvi\n3. รายงาน word and pdf (ตั้งชื่อ project_ID 4 ตัวท้ายหัวหน้ากลุ่ม)\n"
     }
   ]
 }
