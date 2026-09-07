@@ -1,12 +1,7 @@
 {
-  "last_updated": "07/09/2026 17:05:21",
+  "last_updated": "08/09/2026 02:04:44",
   "total_tasks": 28,
   "events": [
-    {
-      "title": "Assigment: Complete demo of circle (3 methods) is due",
-      "due_date": "2026-09-07T23:59:00",
-      "description": "// C5.CALDIAMETER(); // 2 * RADIUS; AND REMEMBER\n\n// C5.CALCIRCUMFERENCE(); // 2 * MATH.PI * RADIUS, AND REMEMBER// C5.PROOFMYPI();\n\n// MYPI = CIRCUMFERENCE/DIAMETER; AND REMEMBER\n\n"
-    },
     {
       "title": "งานที่ 3 - อธิบายภาพรวมของบทความวิจัย is due",
       "due_date": "2026-09-09T16:30:00",
@@ -136,6 +131,11 @@
       "title": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 (Questionnaire Closes)",
       "due_date": "2026-10-14T16:00:00",
       "description": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 [1]\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/questionnaire/view.php?id=633220\n"
+    },
+    {
+      "title": "งานที่ 4 - นำเสนอบทความวิจัย is due",
+      "due_date": "2026-10-15T16:30:00",
+      "description": ""
     },
     {
       "title": "ส่งTask_308-301 : Statistics Analysis_15% ที่นี่_24/9/2026 is due",
