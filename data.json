@@ -1,17 +1,7 @@
 {
-  "last_updated": "08/09/2026 21:20:31",
-  "total_tasks": 30,
+  "last_updated": "09/09/2026 01:28:26",
+  "total_tasks": 28,
   "events": [
-    {
-      "title": "ส่ง lecture note หรือรูปตัวเอง is due",
-      "due_date": "2026-09-08T23:59:00",
-      "description": "ส่ง lecture note หรือรูปตัวเอง [1]\n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/assign/view.php?id=667603\n"
-    },
-    {
-      "title": "Workshop: My circle application is due",
-      "due_date": "2026-09-08T23:59:00",
-      "description": "My circle application ตาม code ในชั้นเรียน\n\nสร้างวงกลมของตัวเอง และคำนวณ attributes ต่างๆให้ครบ\n\nเช็คผ่านแลบด้วย\n\nส่ง Capture ผลการทำงาน\n"
-    },
     {
       "title": "งานที่ 3 - อธิบายภาพรวมของบทความวิจัย is due",
       "due_date": "2026-09-09T16:30:00",
