@@ -1,6 +1,6 @@
 {
-  "last_updated": "09/09/2026 05:31:04",
-  "total_tasks": 28,
+  "last_updated": "09/09/2026 11:19:46",
+  "total_tasks": 30,
   "events": [
     {
       "title": "งานที่ 3 - อธิบายภาพรวมของบทความวิจัย is due",
@@ -40,6 +40,16 @@
     {
       "title": "Pre-test_14 opens",
       "due_date": "2026-09-15T21:33:00",
+      "description": ""
+    },
+    {
+      "title": "Note Submission is due",
+      "due_date": "2026-09-16T00:00:00",
+      "description": ""
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-09-16T00:00:00",
       "description": ""
     },
     {
