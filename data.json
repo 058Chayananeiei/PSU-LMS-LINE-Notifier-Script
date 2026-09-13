@@ -1,6 +1,6 @@
 {
-  "last_updated": "13/09/2026 11:27:53",
-  "total_tasks": 24,
+  "last_updated": "13/09/2026 17:07:16",
+  "total_tasks": 25,
   "events": [
     {
       "title": "Lab 10 Psychology of UX/UI design is due",
@@ -66,6 +66,11 @@
       "title": "Exercise Re-submission is due",
       "due_date": "2026-10-02T13:01:00",
       "description": "นักศึกษาที่ประสงค์จะส่งการบ้านใหม่ ให้ดำเนินการดังนี้\n\n\t* จัดส่งเป็นไฟล์ PDF \n\t* ตั้งชื่อไฟล์เป็น รหัสนักศึกษา_ชื่อไฟล์แบบฝึกหัดหรือการบ้าน_resubmit เช่น 6310210000_Ex04_resubmit.pdf\n\t* 1 ไฟล์ 1 แบบฝึกหัด\n\t* นักศึกษาสามารถส่งได้มากกว่า 1 ไฟล์ เช่น นักศึกษาต้องการส่ง Ex03 และ Ex04 ใหม่ ให้ส่งแยกเป็น 2 ไฟล์ คือ 6310210000_Ex03_resubmit.pdf และ 6310210000_Ex04_resubmit.pdf ในกล่องนี้ สูงสุดไม่เกิน 20 ไฟล์\n\n"
+    },
+    {
+      "title": "Lab 12 UX/UI Evaluations is due",
+      "due_date": "2026-10-04T23:59:00",
+      "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 4 ตุลาคม พ.ศ.2569\n"
     },
     {
       "title": "Quiz บทที่ 7 (Sect 05) opens",
