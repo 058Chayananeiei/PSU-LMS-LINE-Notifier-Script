@@ -1,22 +1,7 @@
 {
-  "last_updated": "15/09/2026 21:50:43",
-  "total_tasks": 24,
+  "last_updated": "16/09/2026 01:51:15",
+  "total_tasks": 21,
   "events": [
-    {
-      "title": "Workshop: Complete demo of Sphere is due",
-      "due_date": "2026-09-15T23:59:00",
-      "description": "ตัวอย่าง source code 0915 [1]\n\n\t* คำนวน attribute ของตนเอง และของเพื่อน ด้วย method ต่อไปนี้\n\t* calArea\n\t* calSurface\n\t* calVolume\n\t* printInfo\n\n\n\nLinks:\n------\n[1] https://drive.google.com/open?id=1Ok72ClJyd1b74UAnML3VpC0fEc7449dW&amp;usp=drive_copy\n"
-    },
-    {
-      "title": "Note Submission is due",
-      "due_date": "2026-09-16T00:00:00",
-      "description": ""
-    },
-    {
-      "title": "Lab Submission is due",
-      "due_date": "2026-09-16T00:00:00",
-      "description": ""
-    },
     {
       "title": "Quiz เนื้อหาบทที่ 6 BMC (Sect 05) opens",
       "due_date": "2026-09-18T09:00:00",
