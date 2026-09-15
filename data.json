@@ -1,11 +1,21 @@
 {
-  "last_updated": "15/09/2026 11:34:19",
-  "total_tasks": 24,
+  "last_updated": "15/09/2026 16:57:28",
+  "total_tasks": 26,
   "events": [
+    {
+      "title": "ส่ง lecture note เรื่อง Sphere is due",
+      "due_date": "2026-09-15T17:00:00",
+      "description": "ส่ง lecture note เรื่อง Sphere [1]\n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/assign/view.php?id=669947\n"
+    },
     {
       "title": "Pre-test_14 opens",
       "due_date": "2026-09-15T21:33:00",
       "description": ""
+    },
+    {
+      "title": "Workshop: Complete demo of Sphere is due",
+      "due_date": "2026-09-15T23:59:00",
+      "description": "ตัวอย่าง source code 0915 [1]\n\n\t* คำนวน attribute ของตนเอง และของเพื่อน ด้วย method ต่อไปนี้\n\t* calArea\n\t* calSurface\n\t* calVolume\n\t* printInfo\n\n\n\nLinks:\n------\n[1] https://drive.google.com/open?id=1Ok72ClJyd1b74UAnML3VpC0fEc7449dW&amp;usp=drive_copy\n"
     },
     {
       "title": "Note Submission is due",
