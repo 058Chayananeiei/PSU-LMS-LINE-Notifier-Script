@@ -1,6 +1,6 @@
 {
-  "last_updated": "16/09/2026 11:30:07",
-  "total_tasks": 21,
+  "last_updated": "16/09/2026 16:48:18",
+  "total_tasks": 23,
   "events": [
     {
       "title": "Quiz เนื้อหาบทที่ 6 BMC (Sect 05) opens",
@@ -31,6 +31,16 @@
       "title": "Lab 11 UI for Web and Smart Phone is due",
       "due_date": "2026-09-20T23:59:00",
       "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 20 กันยายน พ.ศ.2569\n"
+    },
+    {
+      "title": "Note Submission is due",
+      "due_date": "2026-09-23T00:00:00",
+      "description": ""
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-09-23T00:00:00",
+      "description": ""
     },
     {
       "title": "Quiz เนื้อหาบทที่ 6 BMC (Sect 05) closes",
