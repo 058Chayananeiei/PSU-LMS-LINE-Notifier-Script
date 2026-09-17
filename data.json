@@ -1,5 +1,5 @@
 {
-  "last_updated": "17/09/2026 11:35:55",
+  "last_updated": "17/09/2026 16:55:12",
   "total_tasks": 23,
   "events": [
     {
@@ -26,6 +26,11 @@
       "title": "Post-test_14 closes",
       "due_date": "2026-09-18T20:32:00",
       "description": ""
+    },
+    {
+      "title": "ส่งTask_308-301 : Statistics Analysis_15% ที่นี่ Due date 20/9/2026 is due",
+      "due_date": "2026-09-18T23:59:00",
+      "description": "สิ่งที่ต้องส่ง\n1.data (excel หรือ csv)\n2. pdf ไฟด์ output ผลการวิเคราะห์จาก jamuvi\n3. รายงาน word and pdf (ตั้งชื่อ project_ID 4 ตัวท้ายหัวหน้ากลุ่ม)\n"
     },
     {
       "title": "Lab 11 UI for Web and Smart Phone is due",
@@ -111,11 +116,6 @@
       "title": "งานที่ 4 - นำเสนอบทความวิจัย is due",
       "due_date": "2026-10-15T16:30:00",
       "description": ""
-    },
-    {
-      "title": "ส่งTask_308-301 : Statistics Analysis_15% ที่นี่_24/9/2026 is due",
-      "due_date": "2026-10-24T23:59:00",
-      "description": "สิ่งที่ต้องส่ง\n1.data (excel หรือ csv)\n2. pdf ไฟด์ output ผลการวิเคราะห์จาก jamuvi\n3. รายงาน word and pdf (ตั้งชื่อ project_ID 4 ตัวท้ายหัวหน้ากลุ่ม)\n"
     }
   ]
 }
