@@ -1,12 +1,7 @@
 {
-  "last_updated": "18/09/2026 21:19:03",
-  "total_tasks": 18,
+  "last_updated": "19/09/2026 01:16:07",
+  "total_tasks": 17,
   "events": [
-    {
-      "title": "ส่งTask_308-301 : Statistics Analysis_15% ที่นี่ Due date 20/9/2026 is due",
-      "due_date": "2026-09-18T23:59:00",
-      "description": "สิ่งที่ต้องส่ง\n1.data (excel หรือ csv)\n2. pdf ไฟด์ output ผลการวิเคราะห์จาก jamuvi\n3. รายงาน word and pdf (ตั้งชื่อ project_ID 4 ตัวท้ายหัวหน้ากลุ่ม)\n"
-    },
     {
       "title": "Lab 11 UI for Web and Smart Phone is due",
       "due_date": "2026-09-20T23:59:00",
