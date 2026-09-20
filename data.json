@@ -1,12 +1,7 @@
 {
-  "last_updated": "20/09/2026 21:04:23",
-  "total_tasks": 17,
+  "last_updated": "21/09/2026 01:09:55",
+  "total_tasks": 16,
   "events": [
-    {
-      "title": "Lab 11 UI for Web and Smart Phone is due",
-      "due_date": "2026-09-20T23:59:00",
-      "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 20 กันยายน พ.ศ.2569\n"
-    },
     {
       "title": "Note Submission is due",
       "due_date": "2026-09-23T00:00:00",
