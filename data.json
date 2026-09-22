@@ -1,17 +1,7 @@
 {
-  "last_updated": "22/09/2026 21:37:08",
-  "total_tasks": 16,
+  "last_updated": "23/09/2026 01:42:40",
+  "total_tasks": 14,
   "events": [
-    {
-      "title": "Note Submission is due",
-      "due_date": "2026-09-23T00:00:00",
-      "description": ""
-    },
-    {
-      "title": "Lab Submission is due",
-      "due_date": "2026-09-23T00:00:00",
-      "description": ""
-    },
     {
       "title": "Quiz เนื้อหาบทที่ 6 BMC (Sect 05) closes",
       "due_date": "2026-09-24T16:00:00",
