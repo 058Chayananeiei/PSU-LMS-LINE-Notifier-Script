@@ -1,6 +1,6 @@
 {
-  "last_updated": "23/09/2026 05:51:27",
-  "total_tasks": 14,
+  "last_updated": "23/09/2026 11:27:06",
+  "total_tasks": 16,
   "events": [
     {
       "title": "Quiz เนื้อหาบทที่ 6 BMC (Sect 05) closes",
@@ -10,6 +10,16 @@
     {
       "title": "ICT-Ex14 is due",
       "due_date": "2026-09-25T13:32:00",
+      "description": ""
+    },
+    {
+      "title": "Note Submission is due",
+      "due_date": "2026-09-30T00:00:00",
+      "description": ""
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-09-30T00:00:00",
       "description": ""
     },
     {
