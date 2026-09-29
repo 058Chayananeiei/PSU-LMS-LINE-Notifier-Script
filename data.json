@@ -1,6 +1,6 @@
 {
-  "last_updated": "29/09/2026 07:18:16",
-  "total_tasks": 15,
+  "last_updated": "29/09/2026 18:14:35",
+  "total_tasks": 16,
   "events": [
     {
       "title": "เก็บคะแนนTask2. การใช้ Zotero ในการเขียนโครงร่าง  5% 29/9/2026 is due",
@@ -66,6 +66,11 @@
       "title": "***ส่ง CLASSWORK 3 ที่นี่ (นศ. ต้องส่งเป็นรายคน)*** closes",
       "due_date": "2026-10-09T23:59:00",
       "description": ""
+    },
+    {
+      "title": "Workshop: My Geometry Application is due",
+      "due_date": "2026-10-10T23:59:00",
+      "description": "Workshop: My Geometry Application [1]\n\nสาธิตการทำงานคลาสละ 2 ออบเจ็ตก์ คำนวณ attribute ของตัวเองและคำนวณ attribute ของออบเจ็ตก์อื่น\n\nClass:\n\n\t* Square\n\t* Cube\n\t* Triangle\n\t* Prism\n\n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/assign/view.php?id=673646\n"
     },
     {
       "title": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 (Questionnaire Closes)",
