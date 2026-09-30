@@ -1,6 +1,6 @@
 {
-  "last_updated": "30/09/2026 06:35:48",
-  "total_tasks": 13,
+  "last_updated": "30/09/2026 12:13:46",
+  "total_tasks": 15,
   "events": [
     {
       "title": "Lab 12 UX/UI Evaluations is due",
@@ -10,6 +10,16 @@
     {
       "title": "Quiz บทที่ 7 (Sect 05) opens",
       "due_date": "2026-10-05T09:00:00",
+      "description": ""
+    },
+    {
+      "title": "Note Submission is due",
+      "due_date": "2026-10-07T00:00:00",
+      "description": ""
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-10-07T00:00:00",
       "description": ""
     },
     {
