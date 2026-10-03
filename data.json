@@ -1,6 +1,6 @@
 {
-  "last_updated": "03/10/2026 17:20:36",
-  "total_tasks": 16,
+  "last_updated": "04/10/2026 01:37:49",
+  "total_tasks": 18,
   "events": [
     {
       "title": "Lab 12 UX/UI Evaluations is due",
@@ -71,6 +71,16 @@
       "title": "Workshop: My Geometry Application is due",
       "due_date": "2026-10-10T23:59:00",
       "description": "Workshop: My Geometry Application [1]\n\nสาธิตการทำงานคลาสละ 2 ออบเจ็ตก์ คำนวณ attribute ของตัวเองและคำนวณ attribute ของออบเจ็ตก์อื่น\n\nClass:\n\n\t* Square\n\t* Cube\n\t* Triangle\n\t* Prism\n\n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/assign/view.php?id=673646\n"
+    },
+    {
+      "title": "Note Submission is due",
+      "due_date": "2026-10-11T00:00:00",
+      "description": ""
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-10-11T00:00:00",
+      "description": ""
     },
     {
       "title": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 (Questionnaire Closes)",
