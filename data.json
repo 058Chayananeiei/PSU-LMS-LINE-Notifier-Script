@@ -1,12 +1,7 @@
 {
-  "last_updated": "04/10/2026 22:14:46",
-  "total_tasks": 18,
+  "last_updated": "05/10/2026 05:58:20",
+  "total_tasks": 17,
   "events": [
-    {
-      "title": "Lab 12 UX/UI Evaluations is due",
-      "due_date": "2026-10-04T23:59:00",
-      "description": "กำหนดส่งภายในเวลา 23:59 น. วันที่ 4 ตุลาคม พ.ศ.2569\n"
-    },
     {
       "title": "Quiz บทที่ 7 (Sect 05) opens",
       "due_date": "2026-10-05T09:00:00",
