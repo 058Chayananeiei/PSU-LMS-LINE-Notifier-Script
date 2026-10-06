@@ -1,17 +1,7 @@
 {
-  "last_updated": "06/10/2026 18:54:30",
-  "total_tasks": 22,
+  "last_updated": "07/10/2026 03:07:55",
+  "total_tasks": 20,
   "events": [
-    {
-      "title": "Note Submission is due",
-      "due_date": "2026-10-07T00:00:00",
-      "description": ""
-    },
-    {
-      "title": "Lab Submission is due",
-      "due_date": "2026-10-07T00:00:00",
-      "description": ""
-    },
     {
       "title": "Post แบบสอบถามเพื่อประเมินคุณลักษณะของการเป็นผู้ประกอบการด้วยตนเอง (PECs) Sec05 (Questionnaire Opens)",
       "due_date": "2026-10-08T09:00:00",
