@@ -1,37 +1,7 @@
 {
-  "last_updated": "09/10/2026 12:47:01",
-  "total_tasks": 18,
+  "last_updated": "09/10/2026 23:55:27",
+  "total_tasks": 12,
   "events": [
-    {
-      "title": "Submission_Question 1: วาดแผนภาพกระแสข้อมูลเชิงกายภาพใหม่ (new physical data flow diagram) ระดับที่ 1 (15 คะแนน) is due",
-      "due_date": "2026-10-09T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 2: วาดแผนภาพ Entity Relationship Diagram (20 คะแนน) is due",
-      "due_date": "2026-10-09T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 3: เลือกวาดแผนภาพ Class Diagram หรือ Sequence Diagram (ตามขอบเขตของระบบของโจทย์) (20 คะแนน) is due",
-      "due_date": "2026-10-09T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 4: วาด Graphical User Interface (GUI) แบบ web-based หรือ mobile-based (ตามขอบเขตของระบบของโจทย์) โดยเลือกแสดงจากกระบวนการหลัก 1-2 กระบวนการ พร้อมระบุชื่อ process ตาม Q1(15 คะแนน) is due",
-      "due_date": "2026-10-09T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Submission_Question 5: Project Management - PERT Chart (30 คะแนน) is due",
-      "due_date": "2026-10-09T15:00:00",
-      "description": ""
-    },
-    {
-      "title": "Quiz บทที่ 7 (Sect 05) closes",
-      "due_date": "2026-10-09T16:00:00",
-      "description": ""
-    },
     {
       "title": "(Unit 3) Part 1: Vocabulary closes",
       "due_date": "2026-10-09T23:59:00",
