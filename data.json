@@ -1,5 +1,41 @@
 {
-  "last_updated": "12/11/2026 04:50:08",
-  "total_tasks": 0,
-  "events": []
+  "last_updated": "12/11/2026 13:53:32",
+  "total_tasks": 7,
+  "events": [
+    {
+      "title": "Upload ส่งงาน (เดี่ยว) รายงาน SWOT Analysis (.pdf) is due",
+      "due_date": "2026-11-20T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "Upload ส่งงาน (เดี่ยว) Clip นำเสนอ SWOT Analysis is due",
+      "due_date": "2026-11-20T23:59:00",
+      "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
+    },
+    {
+      "title": "Upload ส่งงาน Group Assignment is due",
+      "due_date": "2026-11-20T23:59:00",
+      "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
+    },
+    {
+      "title": "Upload ส่งงาน KM Assignment is due",
+      "due_date": "2026-12-25T23:59:00",
+      "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
+    },
+    {
+      "title": "Upload file - ส่ง Paper ต้นฉบับ (.pdf) is due",
+      "due_date": "2026-12-25T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "Upload file - ส่ง Paper ต้นฉบับ (.pdf) is due",
+      "due_date": "2027-01-06T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "Upload ส่งงาน Assignment is due",
+      "due_date": "2027-01-06T23:59:00",
+      "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
+    }
+  ]
 }
