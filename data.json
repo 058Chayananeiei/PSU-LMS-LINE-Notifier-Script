@@ -1,6 +1,6 @@
 {
-  "last_updated": "16/11/2026 06:53:41",
-  "total_tasks": 17,
+  "last_updated": "16/11/2026 12:59:13",
+  "total_tasks": 18,
   "events": [
     {
       "title": "Upload ส่งงาน (เดี่ยว) รายงาน SWOT Analysis (.pdf) is due",
@@ -18,19 +18,24 @@
       "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
     },
     {
-      "title": "Quiz วิธีถนอมเส้นผม opens",
-      "due_date": "2026-12-07T23:00:00",
-      "description": ""
-    },
-    {
-      "title": "ข้อสอบผมเสียผมสวย opens",
-      "due_date": "2026-12-08T07:30:00",
-      "description": ""
+      "title": "หลักสูตรด้านการคุ้มครองข้อมูลส่วนบุคคล สำหรับประชาชนทั่วไป is due",
+      "due_date": "2026-12-15T00:00:00",
+      "description": "หลักสูตรด้านการคุ้มครองข้อมูลส่วนบุคคล สำหรับประชาชนทั่วไป (เบื้องต้น) [1]\n\nสำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล (สคส.)\n\nการศึกษาและการฝึกอบรม\nhttps://thaimooc.ac.th/courses/PDPC00984\nหรือ\nhttps://learn.thaimooc.ac.th/courses/course-v1:PDPC+00984+0/about\n\nเรียนจบ\nนำ Certificate มา อัพโหลดใส่กล่องการบ้าน\n\n\nLinks:\n------\n[1] https://thaimooc.ac.th/courses/PDPC00984\n"
     },
     {
       "title": "Pre-test (เก็บคะเเนนการเข้าทำในเวลา 5 คะเเนน) opens",
       "due_date": "2026-12-15T00:34:00",
       "description": "เปิดให้ทำตั้งเเต่วันที่ 29 มิ.ย. - 1 ก.ค. 2569 เวลา 13.30 น.  เท่านั้น\n"
+    },
+    {
+      "title": "Quiz วิธีถนอมเส้นผม closes",
+      "due_date": "2026-12-16T23:59:00",
+      "description": ""
+    },
+    {
+      "title": "ข้อสอบหัวข้อ การดูแลผมเสีย closes",
+      "due_date": "2026-12-16T23:59:00",
+      "description": "ให้เวลาทำข้อสอบตั้งแต่วันที่ 16 พย. 2569 ถึง 16 ธค. 2569\n"
     },
     {
       "title": "Post-test (เก็บคะเเนนการเข้าทำในเวลา 10 คะเเนน) opens",
