@@ -1,6 +1,6 @@
 {
-  "last_updated": "18/11/2026 09:18:16",
-  "total_tasks": 19,
+  "last_updated": "18/11/2026 20:45:23",
+  "total_tasks": 20,
   "events": [
     {
       "title": "Upload ส่งงาน (เดี่ยว) รายงาน SWOT Analysis (.pdf) is due",
@@ -96,6 +96,11 @@
       "title": "Quiz ไขมันสูง opens",
       "due_date": "2027-01-14T04:00:00",
       "description": ""
+    },
+    {
+      "title": "ตอบคำถามแผนการดูแลสุขภาพใน case closes",
+      "due_date": "2027-01-17T14:59:00",
+      "description": "ตอบคำถามสั้นๆเกี่ยวกับการดูแลสุขภาพของ case ต่างๆ กำหนดเวลาในการตอบ 30 นาที\n"
     }
   ]
 }
