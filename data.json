@@ -1,6 +1,6 @@
 {
-  "last_updated": "19/11/2026 05:31:53",
-  "total_tasks": 20,
+  "last_updated": "19/11/2026 13:59:53",
+  "total_tasks": 21,
   "events": [
     {
       "title": "Upload ส่งงาน (เดี่ยว) รายงาน SWOT Analysis (.pdf) is due",
@@ -16,6 +16,11 @@
       "title": "Upload ส่งงาน Group Assignment is due",
       "due_date": "2026-11-20T23:59:00",
       "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
+    },
+    {
+      "title": "Lab Submission is due",
+      "due_date": "2026-11-25T00:00:00",
+      "description": ""
     },
     {
       "title": "Upload ส่งลิงก์ YouTube ออกแบบ packaging (งานเดี่ยว) is due",
