@@ -1,22 +1,7 @@
 {
-  "last_updated": "20/11/2026 20:55:28",
-  "total_tasks": 23,
+  "last_updated": "21/11/2026 05:11:44",
+  "total_tasks": 20,
   "events": [
-    {
-      "title": "Upload ส่งงาน (เดี่ยว) รายงาน SWOT Analysis (.pdf) is due",
-      "due_date": "2026-11-20T23:59:00",
-      "description": ""
-    },
-    {
-      "title": "Upload ส่งงาน (เดี่ยว) Clip นำเสนอ SWOT Analysis is due",
-      "due_date": "2026-11-20T23:59:00",
-      "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
-    },
-    {
-      "title": "Upload ส่งงาน Group Assignment is due",
-      "due_date": "2026-11-20T23:59:00",
-      "description": "* Upload file VDO ลง YouTube\n\t* ส่ง ลิงก์ VDO ใน LMS2 โดยใส่ช่องว่าง online text \n\n"
-    },
     {
       "title": "Post-test ออกกำลังกายให้หุ่นกระชับ opens",
       "due_date": "2026-11-23T13:00:00",
