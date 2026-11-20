@@ -1,7 +1,12 @@
 {
-  "last_updated": "20/11/2026 01:56:05",
-  "total_tasks": 20,
+  "last_updated": "20/11/2026 08:43:48",
+  "total_tasks": 24,
   "events": [
+    {
+      "title": "Attendance",
+      "due_date": "2026-11-20T10:00:00",
+      "description": ""
+    },
     {
       "title": "Upload ส่งงาน (เดี่ยว) รายงาน SWOT Analysis (.pdf) is due",
       "due_date": "2026-11-20T23:59:00",
@@ -31,6 +36,16 @@
       "title": "Lab Submission is due",
       "due_date": "2026-11-25T00:00:00",
       "description": ""
+    },
+    {
+      "title": "เรียนรู้ LLM ทำความรู้จักและรู้จริง is due",
+      "due_date": "2026-11-27T00:00:00",
+      "description": "Introduction - Hugging Face LLM Course [1]\nhttps://huggingface.co/learn/llm-course/chapter1/1\nอัพโหลด Certificate ที่เรียนเสร็จ\n\n\nLinks:\n------\n[1] https://huggingface.co/learn/llm-course/chapter1/1\n"
+    },
+    {
+      "title": "วิเคราะห์เหตุการณ์ is due",
+      "due_date": "2026-11-27T00:00:00",
+      "description": "0. ยกตัวอย่างเหตุการณ์ในเดือน ตค-พย 2569\nวิเคราะห์เหตุการณ์ [1]บริการล่ม/ข้อมูลรั่วด้วย 4 คำถาม\n\n1 เกิดอะไรขึ้นและกระทบใคร\n\n2 การควบคุมใดล้มเหลว\n\n3 ทีมตรวจพบและฟื้นตัวอย่างไร\n\n4 จะป้องกันการเกิดซ้ำอย่างไร\n\nส่งคำตอบไม่เกิน 1 หน้ากระดาษ A4 ฟอนต์ TH Sarabun PSK size 16\nงานเดี่ยว เขียนชื่อและรหัสในชื่อไฟล์ (C1_รหัส ชื่อ) และหน้าคำตอบให้ชัดเจน \n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/assign/view.php?id=697863\n"
     },
     {
       "title": "Post-test ออกกำลังกายให้หุ่นกระชับ closes",
@@ -101,6 +116,11 @@
       "title": "ตอบคำถามแผนการดูแลสุขภาพใน case closes",
       "due_date": "2027-01-17T14:59:00",
       "description": "ตอบคำถามสั้นๆเกี่ยวกับการดูแลสุขภาพของ case ต่างๆ กำหนดเวลาในการตอบ 30 นาที\n"
+    },
+    {
+      "title": "Quiz ชะลอวัย (Beauty product) opens",
+      "due_date": "2027-01-19T06:00:00",
+      "description": "ข้อสอบเป็นแบบ T/F จำนวน 10 ข้อ 10 นาที (10 คะแนน) เปิดให้ทำภายในเวลาที่กำหนดเท่านั้นนะคะ\n\nเปิดให้ทำเพียงครั้งเดียวในระหว่างวันที่ 19 มกราคม 2570 เวลา 6:00 น. - 28 กุมภาพันธ์ 2570 เวลา 23:50 น.\n\nหากมีข้อสงสัยหรือไม่สามารถเข้าทำข้อสอบได้ ให้แจ้ง pilaiwanwadee.h@psu.ac.th ทันที\n"
     }
   ]
 }
