@@ -1,12 +1,7 @@
 {
-  "last_updated": "20/11/2026 08:43:48",
-  "total_tasks": 24,
+  "last_updated": "20/11/2026 20:55:28",
+  "total_tasks": 23,
   "events": [
-    {
-      "title": "Attendance",
-      "due_date": "2026-11-20T10:00:00",
-      "description": ""
-    },
     {
       "title": "Upload ส่งงาน (เดี่ยว) รายงาน SWOT Analysis (.pdf) is due",
       "due_date": "2026-11-20T23:59:00",
