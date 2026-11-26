@@ -1,17 +1,7 @@
 {
-  "last_updated": "26/11/2026 21:55:17",
-  "total_tasks": 22,
+  "last_updated": "27/11/2026 06:40:04",
+  "total_tasks": 20,
   "events": [
-    {
-      "title": "เรียนรู้ LLM ทำความรู้จักและรู้จริง is due",
-      "due_date": "2026-11-27T00:00:00",
-      "description": "Introduction - Hugging Face LLM Course [1]\nhttps://huggingface.co/learn/llm-course/chapter1/1\nอัพโหลด Certificate ที่เรียนเสร็จ\n\n\nLinks:\n------\n[1] https://huggingface.co/learn/llm-course/chapter1/1\n"
-    },
-    {
-      "title": "วิเคราะห์เหตุการณ์ is due",
-      "due_date": "2026-11-27T00:00:00",
-      "description": "0. ยกตัวอย่างเหตุการณ์ในเดือน ตค-พย 2569\nวิเคราะห์เหตุการณ์ [1]บริการล่ม/ข้อมูลรั่วด้วย 4 คำถาม\n\n1 เกิดอะไรขึ้นและกระทบใคร\n\n2 การควบคุมใดล้มเหลว\n\n3 ทีมตรวจพบและฟื้นตัวอย่างไร\n\n4 จะป้องกันการเกิดซ้ำอย่างไร\n\nส่งคำตอบไม่เกิน 1 หน้ากระดาษ A4 ฟอนต์ TH Sarabun PSK size 16\nงานเดี่ยว เขียนชื่อและรหัสในชื่อไฟล์ (C1_รหัส ชื่อ) และหน้าคำตอบให้ชัดเจน \n\n\nLinks:\n------\n[1] https://lms.psu.ac.th/mod/assign/view.php?id=697863\n"
-    },
     {
       "title": "Post-test ออกกำลังกายให้หุ่นกระชับ closes",
       "due_date": "2026-11-30T23:59:00",
